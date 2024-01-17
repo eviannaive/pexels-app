@@ -15,6 +15,18 @@ const config: Config = {
       },
       minHeight:{
         'custom': 'calc(calc(100vh - var(--navHeight)))'
+      },
+      keyframes: {
+        twinkling: {
+          '0%, 60%, 100%': { 
+            scale: '1',
+            backgroundPosition: 'left top'
+          },
+          '80%': {
+            scale: '1.05',
+            backgroundPosition: 'right bottom'
+          }
+        }
       }
     },
   },

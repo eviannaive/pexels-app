@@ -24,7 +24,7 @@ const navData = [
   {
     name: 'COLLECTION',
     link: '/',
-    icon: 'faHeart'
+    icon: 'faImages'
   },
 ]
 export const metadata: Metadata = {
