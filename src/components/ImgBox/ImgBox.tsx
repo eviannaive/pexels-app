@@ -1,9 +1,9 @@
 import Image from "next/image"
 
-const Picture = (url) => {
+const ImgBox = (url) => {
   return <div className="">
     <Image src={url} />
   </div>
 }
 
-export default Picture
+export default ImgBox
