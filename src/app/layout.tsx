@@ -7,9 +7,9 @@ import { Nav } from '@/components/Nav'
 const inter = Inter({ subsets: ['latin'] })
 const navData = [
   {
-    name: 'HOME',
-    link: '/',
-    icon: 'faHome'
+    name: 'PHOTOS',
+    link: '/photos',
+    icon: 'faCameraRetro'
   },
   {
     name: 'LOG IN',

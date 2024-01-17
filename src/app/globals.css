@@ -2,8 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  letter-spacing: .5px;
+}
+
 @layer base {
   :root {
     --navHeight: 68px;
   }
+
 }
