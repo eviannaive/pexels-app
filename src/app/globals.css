@@ -17,4 +17,41 @@
   .absolute-center {
     @apply absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]
   }
+  .loader {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 3em;
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    animation: loader-1 1s infinite linear;
+  }
+  .loader::before,.loader::after{
+    content:'';
+    width: 100%; 
+    height: 100%;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: -25px 0 0 -25px;
+    top: 50%;
+    left: 50%;
+    background-color: rgb(212, 66, 66);
+    animation: 1s infinite ease-in-out;
+    animation-name: loader-2;
+  }
+  .loader::after { animation-direction: reverse;background-color: rgb(212, 66, 66) }
+}
+
+@keyframes loader-1 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes loader-2 {
+  0%   { transform: scale(0.2); left:   0%; }
+  50%  { transform: scale(1.0); left:  50%; }
+  100% { transform: scale(0.2); left: 100%; }
 }

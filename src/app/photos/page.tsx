@@ -53,7 +53,7 @@ export default function Photos() {
 			}
 			<div className='text-center mt-[30px] mb-[50px]'>
 				<label className={`bg-white rounded-50px inline-flex items-center py-[6px] px-[8px] text-lg border-0 w-[80%] max-w-[400px] ${loading? 'pointer-events-none' : ''}`}>
-					<input type="text" placeholder={initFetch.current} className='bg-white/0 focus:outline-none text-slate-700 font-medium grow px-4' onChange={inputHandler}/>
+					<input type="text" placeholder={`${initFetch.current} ...`} className='bg-white/0 focus:outline-none text-slate-700 font-medium grow px-4' onChange={inputHandler}/>
 					<div className='w-[40px] h-[40px] flex justify-center items-center relative'>
 						<div className={`w-full h-full bg-rose-100 rounded-full absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] scale-0 transition-transform duration-500 cursor-pointer ${searchBtnShow?'scale-100':''}`} onClick={searchHandler}></div>
 						<FontAwesomeIcon icon={faMagnifyingGlass} color="#28ad80" className='relative z-10 pointer-events-none'/>
@@ -61,17 +61,18 @@ export default function Photos() {
 				</label>
 			</div>
 			{
-				loading ? (<div className='text-2xl text-center'>loading</div>) : ''
+				loading ? (<div className='text-2xl text-center'>loading
+				<div className='loader'></div></div>) : ''
 			}
 			{
 				!loading ?
 					(<div className='flex items-center flex-col'>
 						{	
 							searchMemo.length ? (
-								<div className='flex flex-wrap border-l border-t border-dashed border-slate-100 w-[80%]'>
+								<div className='flex flex-wrap border-l-2 border-t-2 border-dashed border-slate-400 w-[80%]'>
 							{
 								(Array(Math.ceil(data.length / 4) * 4).fill(null).map((b,index)=>
-								<div className='w-[25%] border-r border-b border-dashed border-slate-100 p-[5px]'>
+								<div className='w-[25%] border-r-2 border-b-2 border-dashed border-slate-400 p-[5px]'>
 									<div className='pb-[100%] relative'>
 										{ data[index] && (
 											<img src={data[index].src.large} alt="" className='absolute-center w-full h-full object-cover'/>
