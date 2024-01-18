@@ -30,6 +30,14 @@ const config: Config = {
           '80%': {
             scale: '1.05',
           }
+        },
+        bgLinear: {
+          '0%,100%': {
+            backgroundPosition: 'left top'
+          },
+          '50%': {
+            backgroundPosition: 'right bottom'
+          }
         }
       }
     },
