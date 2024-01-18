@@ -19,15 +19,16 @@ const config: Config = {
       borderRadius: {
         '50px': '50px'
       },
+      transitionProperty: {
+        height: 'height'
+      },
       keyframes: {
         twinkling: {
           '0%, 60%, 100%': { 
             scale: '1',
-            backgroundPosition: 'left top'
           },
           '80%': {
             scale: '1.05',
-            backgroundPosition: 'right bottom'
           }
         }
       }

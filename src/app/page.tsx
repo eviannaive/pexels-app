@@ -41,7 +41,7 @@ export default async function Home() {
       }
       <div className='flex flex-col grow justify-center items-center my-[50px]'>
         <TextTitle text="Collect your favorite pictures." delay={1} />
-        <ButtonExplore text="FIND MORE" delay={1.5} />
+        <ButtonExplore text="FIND MORE" delay={1.5} target="/photos" />
       </div>
     </div>
   )
