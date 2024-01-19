@@ -40,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Nav data={navData}/>
+        <Nav list={navData}/>
         <main className="w-full min-h-screen pt-[68px] bg-fixed bg-[length:250%_250%] bg-gradient-to-br from-orange-400/15 via-violet-700/15 to-cyan-700/30 animate-[bgLinear_30s_infinite]">
           {children}
         </main>
