@@ -1,13 +1,16 @@
 "use client"
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBinoculars, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { useMemo, useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
-import { Loading } from '@/components/Loading';
 import Pagination from '@/components/Pagination';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+
+// components
+import { Loading } from '@/components/Loading';
+import { NoResult } from '@/components/NoResult';
 
 const pexelsKey = process.env.NEXT_PUBLIC_PEXELS_KET;
 
@@ -68,7 +71,6 @@ export default function Photos() {
 	const urlMemo = useMemo(()=>{
 		return new SearchPropControl()
 	},[])
-
 
 	// fetch
 	const fetchData = async ({value, url, page = 1} : {value?: string, url?: string, page?:number}) => {
@@ -167,7 +169,7 @@ export default function Photos() {
 			</div>
 			{
 				loading ? (
-					<div className='text-2xl text-center'>
+					<div className='text-2xl text-center my-[80px]'>
 						<Loading />	
 					</div>
 				) : ''
@@ -193,19 +195,13 @@ export default function Photos() {
 									{
 										!firstSearch.current && searchMemo.allPages ?
 											<div className='flex px-3 justify-end'>
-												<Pagination data={resultInfo} totalPages = {searchMemo.allPages} event={paginationHandler}></Pagination>
+												<Pagination data={resultInfo} totalPages = {searchMemo.allPages} event={paginationHandler}/>
 											</div> : ''
 									}
 						</div>
 							) : (
 								<div className='text-lg text-zinc-700 text-center py-[60px]'>
-									<FontAwesomeIcon icon={faBinoculars} size="4x"/>
-									<p className='mt-[20px]'>
-										<span>We couldn’t find anything for </span>
-										<span className='underline underline-offset-8 decoration-amber-600 text-2xl font-medium'>{searchMemo.input}</span>
-										<span>.</span>
-									</p>
-									<p className='mt-2'>Try to refine your search.</p>
+									<NoResult text={searchMemo.input}/>
 								</div>
 							)
 						}
