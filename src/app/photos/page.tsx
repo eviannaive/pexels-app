@@ -7,9 +7,10 @@ import axios from 'axios';
 import Image from 'next/image';
 import { Loading } from '@/components/Loading';
 import Pagination from '@/components/Pagination';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 
 const pexelsKey = process.env.NEXT_PUBLIC_PEXELS_KET;
-	
+
 export default function Photos() {
 	const perPage = 12;
 
@@ -23,27 +24,51 @@ export default function Photos() {
 	let [photosArr, setPhotosArr] = useState([]);
 	let [loading, setLoading] = useState(true)
 
+	const searchParams = useSearchParams();
+	const pathname = usePathname()
+	const router = useRouter();
+	class SearchPropControl {
+		params = new URLSearchParams(searchParams)
+		constructor(){
+			console.log('new SearchPropControl')
+		}
+		setProp({value, page} : {value?: string, page?: number}){
+			value && this.params.set('query',value);
+			page && page > 1 ? this.params.set('page',page) : this.params.delete('page');
+			this.setUrl()
+		}
+		getSearchProp(){
+			const query = this.params.get('query')
+			const page = this.params.get('page')
+			return {query, page}
+		}
+		propPageReset(){
+			this.params.delete('page')
+			this.setUrl()
+		}
+		setUrl(){
+			router.replace(`${pathname}?${this.params.toString()}`)
+		}
+	}
+
 	// confirm fetch once
 	const initFetch = useRef('')
 	const firstSearch = useRef(true)
+	const inputRef = useRef('')
 
 	// memo static data
 	const searchMemo = useMemo(()=>{
 		return {
 			input: inputValue || initFetch.current,
 			length: photosArr.length,
-			pages: Math.ceil(resultInfo.total_results / perPage)
+			allPages: Math.ceil(resultInfo.total_results / perPage),
 		}
 	},[photosArr])
 
-	// dynamic search button
-	const inputHandler = (e) => {
-		const value = e.target.value;
-		if(value) setSearchBtnShow(true)
-		else setSearchBtnShow(false)
-		setInputValue(e.target.value)
-		console.log(inputValue)
-	}
+	const urlMemo = useMemo(()=>{
+		return new SearchPropControl()
+	},[])
+
 
 	// fetch
 	const fetchData = async ({value, url, page = 1} : {value?: string, url?: string, page?:number}) => {
@@ -61,35 +86,68 @@ export default function Photos() {
 		console.log(result.data)
 	}
 
+	// dynamic search button
+	const inputHandler = (e) => {
+		const value = e.target.value;
+		if(value) setSearchBtnShow(true)
+		else setSearchBtnShow(false)
+		setInputValue(e.target.value)
+	}
+
 	// search
 	const searchHandler = () => {
 		if(searchMemo.input === inputValue) return;
 		fetchData({value: inputValue})
+		urlMemo.setProp({value:inputValue})
+		urlMemo.propPageReset()
 		firstSearch.current = false
 	}
 
 	useEffect(()=>{
 		if (!initFetch.current) {
+			const {query, page} = urlMemo.getSearchProp();
+			if(query) {
+				firstSearch.current = false;
+				inputRef.current.value = query;
+				setSearchBtnShow(true)
+			}
+			console.log(query, page)
+
 			const randomKeyword = demoList[Math.floor(Math.random()*demoList.length)]
 			initFetch.current = randomKeyword;
-			// setInputValue(randomKeyword)
-			fetchData({value: randomKeyword});
+			fetchData({value: query??randomKeyword, page: page});
 		}
 	},[]) 
 
 	// pagination event
-	const paginationHandler = {
-    prev(){
-			fetchData({url:resultInfo.prev_page})
-		},
-    next(){
-			fetchData({url:resultInfo.next_page})
-		},
-		toPage(page : number){
-			const pageNum = page > searchMemo.pages ? searchMemo.pages : page 
-			fetchData({value:searchMemo.input, page: pageNum});
+	class PaginationControl {
+		constructor(){
+			console.log('new PaginationControl')
 		}
-  };
+		setPageProp(pageNum: number){
+			urlMemo.setProp({page: pageNum})
+		}
+		async prev(){
+			if(!resultInfo.prev_page) return
+			await fetchData({url:resultInfo.prev_page})
+			console.log(resultInfo.page - 1)
+			this.setPageProp(resultInfo.page - 1)
+		}
+		async next(){
+			if(!resultInfo.next_page) return
+			await fetchData({url:resultInfo.next_page})
+			this.setPageProp(resultInfo.page + 1)
+		}
+		async toPage(page : number){
+			const pageNum = page > searchMemo.allPages ? searchMemo.allPages : page 
+			await fetchData({value: searchMemo.input, page: pageNum});
+			this.setPageProp(pageNum)
+		}
+	}
+
+	const paginationHandler = useMemo(()=>{
+		return new PaginationControl
+	},[resultInfo])
 
 	return (
 		<div className='pt-[50px] pb-[120px] px-[80px] max-w-[1500px] mx-auto'>
@@ -100,7 +158,7 @@ export default function Photos() {
 			}
 			<div className='text-center mt-[30px] mb-[50px]'>
 				<label className={`bg-white rounded-50px inline-flex items-center py-[6px] px-[8px] text-lg border-0 w-full max-w-[400px] ${loading? 'pointer-events-none' : ''}`}>
-					<input type="text" placeholder={`${initFetch.current} ...`} className='bg-white/0 focus:outline-none text-slate-700 font-medium grow px-4' onChange={inputHandler} />
+					<input type="text" placeholder={`${initFetch.current} ...`} className='bg-white/0 focus:outline-none text-slate-700 font-medium grow px-4' onChange={inputHandler} ref={inputRef}/>
 					<div className='w-[40px] h-[40px] flex justify-center items-center relative'>
 						<div className={`w-full h-full bg-rose-100 rounded-full absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] scale-0 transition-transform duration-500 cursor-pointer ${searchBtnShow?'scale-100':''}`} onClick={searchHandler}></div>
 						<FontAwesomeIcon icon={faMagnifyingGlass} color="#28ad80" className='relative z-10 pointer-events-none'/>
@@ -133,9 +191,9 @@ export default function Photos() {
 										}
 									</div>
 									{
-										searchMemo.pages ?
+										!firstSearch.current && searchMemo.allPages ?
 											<div className='flex px-3 justify-end'>
-												<Pagination data={resultInfo} totalPages = {searchMemo.pages} event={paginationHandler}></Pagination>
+												<Pagination data={resultInfo} totalPages = {searchMemo.allPages} event={paginationHandler}></Pagination>
 											</div> : ''
 									}
 						</div>
