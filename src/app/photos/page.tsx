@@ -1,7 +1,8 @@
 "use client"
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { useSearchContext } from '@/context/searchContext';
 import { useMemo, useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
@@ -11,21 +12,26 @@ import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 // components
 import { Loading } from '@/components/Loading';
 import { NoResult } from '@/components/NoResult';
+import SearchBar from '@/components/SearchBar';
 
 const pexelsKey = process.env.NEXT_PUBLIC_PEXELS_KET;
 
 export default function Photos() {
+	let {
+			setSearchBtnShow,
+			inputValue,
+			resultInfo, setResultInfo,
+			photosArr, setPhotosArr,
+			loading, setLoading,
+			initFetch,
+			firstSearch,
+			inputRef
+		} : any = useSearchContext()
+
 	const perPage = 12;
 
 	// default keyword
 	const demoList = ['cat flower','lake boat','desert night meteor','european style architecture','violin','bridge','rainbow'];
-
-	// useState
-	let [searchBtnShow, setSearchBtnShow] = useState(false);
-	let [inputValue, setInputValue] = useState('');
-	let [resultInfo, setResultInfo] = useState({});
-	let [photosArr, setPhotosArr] = useState([]);
-	let [loading, setLoading] = useState(true)
 
 	const searchParams = useSearchParams();
 	const pathname = usePathname()
@@ -37,7 +43,7 @@ export default function Photos() {
 		}
 		setProp({value, page} : {value?: string, page?: number}){
 			value && this.params.set('query',value);
-			page && page > 1 ? this.params.set('page',page) : this.params.delete('page');
+			page && page > 1 ? this.params.set('page',String(page)) : this.params.delete('page');
 			this.setUrl()
 		}
 		getSearchProp(){
@@ -53,11 +59,6 @@ export default function Photos() {
 			router.replace(`${pathname}?${this.params.toString()}`)
 		}
 	}
-
-	// confirm fetch once
-	const initFetch = useRef('')
-	const firstSearch = useRef(true)
-	const inputRef = useRef('')
 
 	// memo static data
 	const searchMemo = useMemo(()=>{
@@ -88,14 +89,6 @@ export default function Photos() {
 		console.log(result.data)
 	}
 
-	// dynamic search button
-	const inputHandler = (e) => {
-		const value = e.target.value;
-		if(value) setSearchBtnShow(true)
-		else setSearchBtnShow(false)
-		setInputValue(e.target.value)
-	}
-
 	// search
 	const searchHandler = () => {
 		if(searchMemo.input === inputValue) return;
@@ -113,11 +106,10 @@ export default function Photos() {
 				inputRef.current.value = query;
 				setSearchBtnShow(true)
 			}
-			console.log(query, page)
 
 			const randomKeyword = demoList[Math.floor(Math.random()*demoList.length)]
 			initFetch.current = randomKeyword;
-			fetchData({value: query??randomKeyword, page: page});
+			fetchData({value: query??randomKeyword, page: Number(page)});
 		}
 	},[]) 
 
@@ -159,13 +151,7 @@ export default function Photos() {
 				</div>
 			}
 			<div className='text-center mt-[30px] mb-[50px]'>
-				<label className={`bg-white rounded-50px inline-flex items-center py-[6px] px-[8px] text-lg border-0 w-full max-w-[400px] ${loading? 'pointer-events-none' : ''}`}>
-					<input type="text" placeholder={`${initFetch.current} ...`} className='bg-white/0 focus:outline-none text-slate-700 font-medium grow px-4' onChange={inputHandler} ref={inputRef}/>
-					<div className='w-[40px] h-[40px] flex justify-center items-center relative'>
-						<div className={`w-full h-full bg-rose-100 rounded-full absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] scale-0 transition-transform duration-500 cursor-pointer ${searchBtnShow?'scale-100':''}`} onClick={searchHandler}></div>
-						<FontAwesomeIcon icon={faMagnifyingGlass} color="#28ad80" className='relative z-10 pointer-events-none'/>
-					</div>
-				</label>
+				<SearchBar event={searchHandler}/>
 			</div>
 			{
 				loading ? (
@@ -195,7 +181,7 @@ export default function Photos() {
 									{
 										!firstSearch.current && searchMemo.allPages ?
 											<div className='flex px-3 justify-end'>
-												<Pagination data={resultInfo} totalPages = {searchMemo.allPages} event={paginationHandler}/>
+												<Pagination totalPages = {searchMemo.allPages} event={paginationHandler}/>
 											</div> : ''
 									}
 						</div>

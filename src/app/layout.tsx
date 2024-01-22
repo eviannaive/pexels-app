@@ -12,6 +12,11 @@ const navData = [
     icon: 'faCameraRetro'
   },
   {
+    name: 'COLLECTION',
+    link: '/',
+    icon: 'faImages'
+  },
+  {
     name: 'LOG IN',
     link: '/',
     icon: 'faRightToBracket'
@@ -20,11 +25,6 @@ const navData = [
     name: 'SIGN UP',
     link: '/',
     icon: 'faUserPlus'
-  },
-  {
-    name: 'COLLECTION',
-    link: '/',
-    icon: 'faImages'
   },
 ]
 export const metadata: Metadata = {
