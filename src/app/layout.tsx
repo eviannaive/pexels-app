@@ -23,7 +23,7 @@ const navData = [
   },
   {
     name: 'SIGN UP',
-    link: '/',
+    link: '/sign',
     icon: 'faUserPlus'
   },
 ]
