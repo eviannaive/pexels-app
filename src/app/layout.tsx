@@ -18,14 +18,14 @@ const navData = [
   },
   {
     name: 'LOG IN',
-    link: '/',
+    link: '/login',
     icon: 'faRightToBracket'
   },
-  {
-    name: 'SIGN UP',
-    link: '/sign',
-    icon: 'faUserPlus'
-  },
+  // {
+  //   name: 'SIGN UP',
+  //   link: '/sign',
+  //   icon: 'faUserPlus'
+  // },
 ]
 export const metadata: Metadata = {
   title: 'My Pexels Collection',

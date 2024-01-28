@@ -1,5 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from 'bcrypt'
+import { connectDB } from "@/lib/connectDB";
+
+connectDB();
 
 const UserSchema = new Schema({
     name: {

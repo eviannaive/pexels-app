@@ -1,8 +1,10 @@
 import User from '@/models/User'
-import { connectDB } from '@/utils/connectDB'
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import passport from 'passport'
+import { localStrategy } from '@/lib/passport'
+import { connectDB } from '@/lib/connectDB'
 
 export async function POST(req: Request){
   try{
@@ -21,9 +23,10 @@ export async function POST(req: Request){
         const token = jwt.sign(tokenObject, process.env.NEXT_PUBLIC_SECRET);
         return NextResponse.json({
           message: '成功登入',
-          token: 'JWT' + token,
           user: findUser
-        },{status: 200})
+        },{status: 200,headers: {
+          'Set-Cookie': `token=${token}`}
+        })
       }else{
         console.log('密碼錯誤')
         return NextResponse.json({
