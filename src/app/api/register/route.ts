@@ -12,6 +12,7 @@ export async function POST(req: Request){
     const userExist = await User.findOne({email: data.email});
     if (userExist)
       return NextResponse.json({message: "This email address has already been registered."},{status: 400})
+    data.provider = 'credentials';
     const saveData = await User.create(data);
     return NextResponse.json({message: "Registration successful!",saveData},{status:201})
   }catch(e){

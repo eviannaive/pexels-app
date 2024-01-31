@@ -1,8 +1,5 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from 'bcrypt'
-import { connectDB } from "@/lib/connectDB";
-
-connectDB();
 
 const UserSchema = new Schema({
     name: {
@@ -15,8 +12,13 @@ const UserSchema = new Schema({
     },
     password: {
       type: String,
-      required: true
     },
+    picture: {
+      type: String,
+    },
+    provider: {
+      type: String,
+    }
   },
   {
     // 時間戳
@@ -25,8 +27,10 @@ const UserSchema = new Schema({
 )
 
 UserSchema.pre('save',async function(next){
-  const hashPassword = await bcrypt.hash(this.password, 10)
-  this.password = hashPassword
+  if(!this.provider){
+    const hashPassword = await bcrypt.hash(this.password, 10)
+    this.password = hashPassword
+  }
   next()
 })
 

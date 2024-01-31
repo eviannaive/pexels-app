@@ -1,6 +1,6 @@
-import { AuthProvider } from "@/components/AuthProvider"
+import AuthProvider from "@/context/AuthProvider"
 
-export default function SignLayout({
+export default function LoginLayout({
   children,
 }: {
   children: React.ReactNode

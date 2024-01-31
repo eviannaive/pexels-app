@@ -12,15 +12,15 @@ const navData = [
     icon: 'faCameraRetro'
   },
   {
-    name: 'COLLECTION',
-    link: '/',
+    name: 'Dashboard',
+    link: '/dashboard',
     icon: 'faImages'
   },
-  {
-    name: 'LOG IN',
-    link: '/login',
-    icon: 'faRightToBracket'
-  },
+  // {
+  //   name: 'LOG IN',
+  //   link: '/login',
+  //   icon: 'faRightToBracket'
+  // },
   // {
   //   name: 'SIGN UP',
   //   link: '/sign',

@@ -4,9 +4,9 @@ import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import * as icons from "@fortawesome/free-solid-svg-icons";
 
 type ListData = {
+  name: string;
   link: string;
   icon: keyof typeof icons;
-  name: string;
 };
 
 export default function NavList({listData} : {listData : ListData}){
