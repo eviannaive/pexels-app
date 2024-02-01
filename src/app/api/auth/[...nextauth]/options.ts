@@ -1,6 +1,7 @@
 import GitHubProvider from 'next-auth/providers/github'
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import FacebookProvider from "next-auth/providers/facebook";
 import User from '@/models/User'
 import bcrypt from 'bcrypt'
 import { connectDB } from "@/lib/connectDB";
@@ -10,6 +11,8 @@ const GOOGLE_ID = process.env.GOOGLE_ID!
 const GOOGLE_SECRET = process.env.GOOGLE_SECRET!
 const GITHUB_ID = process.env.GITHUB_ID!
 const GITHUB_SECRET = process.env.GITHUB_SECRET!
+const FACEBOOK_ID = process.env.FACEBOOK_ID!
+const FACEBOOK_SECRET = process.env.FACEBOOK_SECRET!
 
 export const options : NextAuthOptions = {
   providers:  [
@@ -59,6 +62,10 @@ export const options : NextAuthOptions = {
       clientId: GITHUB_ID,
       clientSecret: GITHUB_SECRET
     }),
+    FacebookProvider({
+      clientId: FACEBOOK_ID,
+      clientSecret: FACEBOOK_SECRET,
+    })
   ],
   callbacks: {
     async signIn({ user, account, profile }){
@@ -76,10 +83,10 @@ export const options : NextAuthOptions = {
               const saveData = await User.create({
                 name: name,
                 email: email,
-                image: image || picture,
+                image: user.image || image || picture,
                 provider: provider
               });
-              user.image = image || picture;
+              if(!user.image) user.image = image || picture;
             }
             return true
           }catch(e){
