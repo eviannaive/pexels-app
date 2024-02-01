@@ -13,7 +13,7 @@ const UserSchema = new Schema({
     password: {
       type: String,
     },
-    picture: {
+    image: {
       type: String,
     },
     provider: {

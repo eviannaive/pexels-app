@@ -1,4 +1,4 @@
-import GithubProvider from 'next-auth/providers/github'
+import GitHubProvider from 'next-auth/providers/github'
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import User from '@/models/User'
@@ -30,7 +30,7 @@ export const options : NextAuthOptions = {
       async authorize(credentials){
         try {
           await connectDB();
-          console.log("Credentials");
+          console.log("Credentials",credentials);
           const foundUser = await User.findOne({email: credentials.email}).lean().exec();
           if(foundUser) {
             console.log("User Exists");
@@ -55,49 +55,49 @@ export const options : NextAuthOptions = {
       clientId: GOOGLE_ID,
       clientSecret: GOOGLE_SECRET,
     }),
-    GithubProvider({
+    GitHubProvider({
       clientId: GITHUB_ID,
       clientSecret: GITHUB_SECRET
     }),
   ],
   callbacks: {
-    async signIn({ account, profile }){
+    async signIn({ user, account, profile }){
+      console.log('user~~~~~~~~~~~~',user)
       console.log('signin~~~~~~~~~~~~',account)
       if(account?.type === 'oauth'){
-        console.log('12334565645646', profile.email)
+        console.log('12334565645646', profile.picture)
+        const provider = account.provider;
         try{
             await connectDB();
-            const {name, email, picture} = profile;
-            console.log('runing.........',name, email, picture)
-            const foundUser = await User.findOne({email: email}).lean().exec();
-            console.log(foundUser)
-            if(foundUser){
-              console.log('this is true')
-            }else{
+            const {name, email, image, picture} = profile;
+            const foundUser = await User.findOne({email: email, provider: provider}).lean().exec();
+            if(!foundUser){
               console.log('this is false')
               const saveData = await User.create({
                 name: name,
                 email: email,
-                picture: picture,
-                provider: account.provider
+                image: image || picture,
+                provider: provider
               });
+              user.image = image || picture;
             }
-              return true
+            return true
           }catch(e){
             console.log(e)
           }
         }
-        console.log('loginnnnnnn')
       return true
     },
-    async jwt({token, user, session}){
+    async jwt({token, user, account}){
       console.log("jwt callback",user)
-      // if(user) token = user
+      if(user) {
+        token.provider = account?.provider;
+      }
       return token;
     },
     async session({session, token, user}){
       console.log("session callback",user)
-      // if(session?.user) session.user = token
+      if(session?.user) session.user.provider = token?.provider
       return session;
     },
   },
