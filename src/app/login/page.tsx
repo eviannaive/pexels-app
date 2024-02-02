@@ -77,7 +77,8 @@ export default function Login(){
     })
     .then((res)=>{
       console.log('送出成功')
-      router.replace('/photos')
+      // 用router不能刷新
+      window.location.reload();
     })
     .catch((err)=>{
       console.log(err,'message')
