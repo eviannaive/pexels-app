@@ -9,13 +9,13 @@ export async function POST(req: Request){
     await connectDB();
     const data = await req.json();
     // 查看信箱是否重複
-    const userExist = await User.findOne({email: data.email});
+    const userExist = await User.findOne({email: data.email, provider: 'credentials'});
     if (userExist)
-      return NextResponse.json({message: "This email address has already been registered."},{status: 400})
-    data.provider = 'credentials';
-    const saveData = await User.create(data);
-    return NextResponse.json({message: "Registration successful!",saveData},{status:201})
+      return NextResponse.json({message: "This email has been registered."},{status: 403})
+    else
+      return NextResponse.json({status:200})
   }catch(e){
-    return NextResponse.json(e)
+    console.log(e)
+    return NextResponse.json({message: "please try again"},{status: 500})
   }
 }
