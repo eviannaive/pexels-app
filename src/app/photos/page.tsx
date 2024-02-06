@@ -13,6 +13,8 @@ import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { Loading } from '@/components/Loading';
 import { NoResult } from '@/components/NoResult';
 import SearchBar from '@/components/SearchBar';
+import ImgBox from '@/components/ImgBox';
+
 
 const pexelsKey = process.env.NEXT_PUBLIC_PEXELS_KET;
 
@@ -170,11 +172,13 @@ export default function Photos() {
 										{
 											(Array(Math.ceil(photosArr.length / 4) * 4).fill(null).map((b,index)=>
 											<div className='w-[25%] border-r-2 border-b-2 border-dashed border-slate-400 p-[5px]'>
-												<div className='pb-[100%] relative'>
-													{ photosArr[index] && (
-														<img src={photosArr[index]?.src.large} alt="" className='absolute-center w-full h-full object-cover'/>
-													)}
-												</div>
+												{
+													<div className='pb-[100%] relative'>
+														{ photosArr[index] && (
+															<img src={photosArr[index]?.src.large} alt="" className='absolute-center w-full h-full object-cover'/>
+														)}
+													</div>
+												}
 											</div>))
 										}
 									</div>
