@@ -8,7 +8,8 @@ export async function connectDB(){
     return;
   }
   try{
-    await mongoose.connect('mongodb://127.0.0.1/exampleDB').then(()=>{
+    console.log('連接DB...npm run dev');
+    await mongoose.connect('mongodb://127.0.0.1/pexelsApp').then(()=>{
       console.log('connect DB successful')
       isConnected = true
     })

@@ -1,10 +1,10 @@
 import Image from 'next/image'
 import axios from "axios";
-import Marquee from "react-fast-marquee"
+
 import { ButtonExplore } from '@/components/Buttons'
 import { TextTitle } from '@/components/Text'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { ModalContextProvider } from "@/context/ModalContext"
+import { MarqueeWrapper } from '@/components/MarqueeWrapper';
 
 const pexelsKey = process.env.NEXT_PUBLIC_PEXELS_KET;
 
@@ -22,23 +22,12 @@ const initPhoto = async () => {
 }
 
 export default async function Home() {
-  const dataWrap = await Promise.all(Array(2).fill(null).map(d=>initPhoto()))
+  const dataWrap = await Promise.all(Array(2).fill(null).map(d=>initPhoto()));
   return (
     <div className="flex flex-col w-full min-h-custom">
-      {
-        dataWrap.map((data,index)=>(
-          <Marquee direction={index%2? 'left': 'right'} key={index}>
-            {data.map((photo,index)=>(
-              <div className='w-64 h-64 relative overflow-hidden group cursor-pointer' key={index}>
-                <img src={photo.src.large} className='w-full h-full object-cover transition duration-500 group-hover:scale-[1.15]'/>
-                <div className='flex absolute bottom-0 right-2 p-[10px] opacity-0 transition duration-300 group-hover:opacity-100'>
-                  <FontAwesomeIcon icon={faHeart} size="lg" color="#e61e7b"/>
-                </div>
-              </div>
-            ))}
-          </Marquee>
-        ))
-      }
+      <ModalContextProvider>
+        <MarqueeWrapper data={dataWrap}></MarqueeWrapper>
+      </ModalContextProvider>
       <div className='flex flex-col grow justify-center items-center my-[50px]'>
         <TextTitle text="Collect your favorite pictures." delay={1} />
         <ButtonExplore text="FIND MORE" delay={1.5} target="/photos" />
