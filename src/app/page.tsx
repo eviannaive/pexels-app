@@ -24,14 +24,14 @@ const initPhoto = async () => {
 export default async function Home() {
   const dataWrap = await Promise.all(Array(2).fill(null).map(d=>initPhoto()));
   return (
-    <div className="flex flex-col w-full min-h-custom">
-      <ModalContextProvider>
-        <MarqueeWrapper data={dataWrap}></MarqueeWrapper>
-      </ModalContextProvider>
-      <div className='flex flex-col grow justify-center items-center my-[50px]'>
-        <TextTitle text="Collect your favorite pictures." delay={1} />
-        <ButtonExplore text="FIND MORE" delay={1.5} target="/photos" />
+    <ModalContextProvider>
+      <div className="flex flex-col w-full min-h-custom">
+          <MarqueeWrapper data={dataWrap}></MarqueeWrapper>
+        <div className='flex flex-col grow justify-center items-center my-[50px]'>
+          <TextTitle text="Collect your favorite pictures." delay={1} />
+          <ButtonExplore text="FIND MORE" delay={1.5} target="/photos" />
+        </div>
       </div>
-    </div>
+    </ModalContextProvider>
   )
 }
