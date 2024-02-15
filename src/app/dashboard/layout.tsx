@@ -1,21 +1,27 @@
-import { getServerSession } from "next-auth"
-import { options } from "../api/auth/[...nextauth]/options"
+"use client"
 import { redirect } from "next/navigation"
-import AuthProvider from "@/context/AuthProvider"
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from "react";
+import { LoadingFull } from "@/components/Loading";
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const session = await getServerSession(options)
-  console.log(session,'dfjksdljfklsdjfklsdjkflkfjl')
-  if(!session){
-    redirect('login')
-  }
+  const { data: session } = useSession();
+  const [ loading , setLoading] = useState(true);
+  useEffect(()=>{
+    if(!session){
+      redirect('login')
+    }else{
+      setLoading(false)
+    }
+  },[])
   return (
-    <AuthProvider>
-      {children}
-    </AuthProvider>
+    <>
+      {loading && (<LoadingFull />)}
+      {!loading && (<>{children}</>)}
+    </>
   )
 }

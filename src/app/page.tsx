@@ -1,3 +1,4 @@
+"use client"
 import Image from 'next/image'
 import axios from "axios";
 
@@ -5,6 +6,7 @@ import { ButtonExplore } from '@/components/Buttons'
 import { TextTitle } from '@/components/Text'
 import { ModalContextProvider } from "@/context/ModalContext"
 import { MarqueeWrapper } from '@/components/MarqueeWrapper';
+import { useEffect, useRef, useState } from 'react';
 
 const pexelsKey = process.env.NEXT_PUBLIC_PEXELS_KET;
 
@@ -21,12 +23,25 @@ const initPhoto = async () => {
   return result.data.photos
 }
 
-export default async function Home() {
-  const dataWrap = await Promise.all(Array(2).fill(null).map(d=>initPhoto()));
+
+export default function Home() {
+  const initOnce = useRef(false)
+  const [ data, setData ] = useState([])
+  const marqueeData = async() => {
+    const dataArr = await Promise.all(Array(2).fill(null).map(d=>initPhoto()));
+    setData(dataArr)
+    initOnce.current = true
+  }
+  useEffect(()=>{
+    if(!initOnce.current){
+      marqueeData();
+    }
+  },[])
+  // const dataWrap = await Promise.all(Array(2).fill(null).map(d=>initPhoto()));
   return (
     <ModalContextProvider>
       <div className="flex flex-col w-full min-h-custom">
-          <MarqueeWrapper data={dataWrap}></MarqueeWrapper>
+          <MarqueeWrapper data={data}></MarqueeWrapper>
         <div className='flex flex-col grow justify-center items-center my-[50px]'>
           <TextTitle text="Collect your favorite pictures." delay={1} />
           <ButtonExplore text="FIND MORE" delay={1.5} target="/photos" />

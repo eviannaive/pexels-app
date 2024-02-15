@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { Nav } from '@/components/Nav'
+import AuthProvider from "@/context/AuthProvider"
 
 const inter = Inter({ subsets: ['latin'] })
 const navData = [
@@ -40,10 +41,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Nav list={navData}/>
-        <main className="w-full min-h-screen pt-[68px] bg-fixed bg-[length:250%_250%] bg-gradient-to-br from-orange-400/15 via-violet-700/15 to-cyan-700/30 animate-[bgLinear_30s_infinite]">
-          {children}
-        </main>
+        <AuthProvider>
+          <Nav list={navData}/>
+          <main className="w-full min-h-screen pt-[68px] bg-fixed bg-[length:250%_250%] bg-gradient-to-br from-orange-400/15 via-violet-700/15 to-cyan-700/30 animate-[bgLinear_30s_infinite]">
+            {children}
+          </main>
+        </AuthProvider>
       </body>
     </html>
   )
