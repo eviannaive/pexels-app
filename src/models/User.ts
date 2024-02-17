@@ -16,6 +16,9 @@ const UserSchema = new Schema({
     image: {
       type: String,
     },
+    collections: {
+      type: "array"
+    },
     provider: {
       type: String,
     }

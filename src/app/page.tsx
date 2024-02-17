@@ -7,6 +7,7 @@ import { TextTitle } from '@/components/Text'
 import { ModalContextProvider } from "@/context/ModalContext"
 import { MarqueeWrapper } from '@/components/MarqueeWrapper';
 import { useEffect, useRef, useState } from 'react';
+import { ModalWrapper } from "@/components/ModalWrapper";
 
 const pexelsKey = process.env.NEXT_PUBLIC_PEXELS_KET;
 
@@ -41,7 +42,8 @@ export default function Home() {
   return (
     <ModalContextProvider>
       <div className="flex flex-col w-full min-h-custom">
-          <MarqueeWrapper data={data}></MarqueeWrapper>
+        <ModalWrapper/>
+        <MarqueeWrapper data={data} />
         <div className='flex flex-col grow justify-center items-center my-[50px]'>
           <TextTitle text="Collect your favorite pictures." delay={1} />
           <ButtonExplore text="FIND MORE" delay={1.5} target="/photos" />

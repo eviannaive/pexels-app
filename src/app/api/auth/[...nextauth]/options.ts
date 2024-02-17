@@ -69,10 +69,7 @@ export const options : NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile }){
-      console.log('user~~~~~~~~~~~~',user)
-      console.log('signin~~~~~~~~~~~~',account)
       if(account?.type === 'oauth'){
-        console.log('12334565645646', profile.picture)
         const provider = account.provider;
         try{
             await connectDB();
@@ -84,6 +81,7 @@ export const options : NextAuthOptions = {
                 name: name,
                 email: email,
                 image: user.image || image || picture,
+                collections: [],
                 provider: provider
               });
               if(!user.image) user.image = image || picture;
@@ -103,9 +101,13 @@ export const options : NextAuthOptions = {
       return token;
     },
     async session({session, token, user}){
-      console.log("session callback",user)
-      if(session?.user) session.user.provider = token?.provider
-      return session;
+      if(session?.user){
+        const userData = await User.findOne({email: session.user.email, provider: token.provider}).lean().exec();
+        session.user.provider = userData?.provider;
+        session.user.collections = userData?.collections;
+        console.log("session callback",session)
+        return session;
+      } 
     },
   },
   session: {
