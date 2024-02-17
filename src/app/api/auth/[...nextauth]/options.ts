@@ -81,7 +81,7 @@ export const options : NextAuthOptions = {
                 name: name,
                 email: email,
                 image: user.image || image || picture,
-                collections: [],
+                collections: [{name: 'like'}],
                 provider: provider
               });
               if(!user.image) user.image = image || picture;
@@ -103,6 +103,7 @@ export const options : NextAuthOptions = {
     async session({session, token, user}){
       if(session?.user){
         const userData = await User.findOne({email: session.user.email, provider: token.provider}).lean().exec();
+        session.user._id= userData?._id;
         session.user.provider = userData?.provider;
         session.user.collections = userData?.collections;
         console.log("session callback",session)
