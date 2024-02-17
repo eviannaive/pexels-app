@@ -2,6 +2,9 @@ import mongoose, { Schema } from "mongoose";
 import bcrypt from 'bcrypt'
 
 const UserSchema = new Schema({
+    _id: {
+      type: Object
+    },
     name: {
       type: String,
       required: true

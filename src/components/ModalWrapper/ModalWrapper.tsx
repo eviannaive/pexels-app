@@ -15,7 +15,7 @@ export default function ModdleWrapper(){
   const [group, setGroup] = useState([])
   const { data: session } = useSession();
   let [ scope, animate] = useAnimate();
-  let inputRef = useRef('');
+  let inputRef = useRef<HTMLInputElement>(null);
 
   const modalClose = async() => {
     if(modalShow){
@@ -31,18 +31,12 @@ export default function ModdleWrapper(){
   }
 
   const newGroup = async() => {
-    const data = inputRef.current.value;
-    console.log({
-      email: session?.user?.email,
-      provider: session?.user.provider,
-      fileName: data,
-      _id: session?.user._id
-    })
+    const data = inputRef.current?.value;
     if(!data){
       return
     }
     await axios.patch("http://localhost:3000/api/category",{
-      _id: session?.user._id,
+      _id: session?.user?._id,
       fileName: data
     }).then((res)=>{
       const data = res.data.collections;
@@ -55,8 +49,8 @@ export default function ModdleWrapper(){
 
   useEffect(()=>{
     if(modalShow){
-      setGroup(session?.user.collections)
-      console.log(session?.user.collections)
+      setGroup(session?.user?.collections)
+      console.log(session?.user?.collections)
       animate([[scope.current, { opacity: 1 }],['#modalBox',{ scale: 1 }]])
     }
   },[modalShow])
