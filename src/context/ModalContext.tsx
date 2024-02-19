@@ -8,6 +8,7 @@ type ModalType = 'login' | 'like' | undefined;
 export function ModalContextProvider({children}){
   let [modalShow, setModalShow] = useState(false);
   let [modalType, setModalType] = useState('');
+  let [imgId, setImgId] = useState('')
   // let [ scope, animate] = useAnimate();
   // const modalShow = useMemo(()=>{
   //   console.log('memo')
@@ -15,7 +16,7 @@ export function ModalContextProvider({children}){
   // },[modalShow]);
 
   return (
-    <ModalContext.Provider value={{modalShow, setModalShow,modalType, setModalType}}>
+    <ModalContext.Provider value={{modalShow, setModalShow,modalType, setModalType,imgId, setImgId}}>
       {children}
     </ModalContext.Provider>
   )

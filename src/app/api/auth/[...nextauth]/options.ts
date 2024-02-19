@@ -81,7 +81,7 @@ export const options : NextAuthOptions = {
                 name: name,
                 email: email,
                 image: user.image || image || picture,
-                collections: [{name: 'like'}],
+                collections: [{groupId: '00000',name: 'like',photos:[]}],
                 provider: provider
               });
               if(!user.image) user.image = image || picture;

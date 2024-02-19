@@ -79,12 +79,12 @@ export default function Photos() {
 	const fetchData = async ({value, url, page = 1} : {value?: string, url?: string, page?:number}) => {
 		setLoading(true)
 		const searchURL = url || `https://api.pexels.com/v1/search?query=${value}&per_page=${perPage}&page=${page}`
-		console.log(searchURL)
 		const result = await axios.get(searchURL,{
 			headers:{
 				Authorization: pexelsKey
 			}
 		})
+		console.log(result.data.photos)
 		setResultInfo(result.data)
 		setPhotosArr(result.data.photos)
 		setLoading(false)

@@ -10,10 +10,11 @@ import { useSession } from 'next-auth/react';
 import axios from "axios";
 
 export default function ModdleWrapper(){
-  const { modalShow, setModalShow, modalType, setModalType } : any = useModalContext();
+  const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId } : any = useModalContext();
   const router = useRouter();
-  const [group, setGroup] = useState([])
-  const { data: session } = useSession();
+  const [group, setGroup] = useState([]);
+  const [addGroup, setAddGroup] = useState('')
+  const { data: session, update } = useSession();
   let [ scope, animate] = useAnimate();
   let inputRef = useRef<HTMLInputElement>(null);
 
@@ -46,11 +47,24 @@ export default function ModdleWrapper(){
       console.log(err)
     })
   }
+  const sendLike = async(e) => {
+    e.preventDefault();
+    console.log([...e.target].find(input=>input.checked))
+    const gId = [...e.target].find(input=>input.checked)?.value;
+    await axios.patch("http://localhost:3000/api/category/like",{
+      _id: session?.user?._id,
+      photoData: {
+        group: gId,
+        imgId: imgId
+      },
+    }).then((res)=>{console.log(res)})
+
+
+  }
 
   useEffect(()=>{
     if(modalShow){
-      setGroup(session?.user?.collections)
-      console.log(session?.user?.collections)
+      !group.length? setGroup(session?.user?.collections) : '';
       animate([[scope.current, { opacity: 1 }],['#modalBox',{ scale: 1 }]])
     }
   },[modalShow])
@@ -81,19 +95,20 @@ export default function ModdleWrapper(){
                         + New Group
                       </ButtonDefault>
                     </div>
-                    <div className="text-sm mt-[20px] h-[160px] overflow-y-scroll">
-                      {
-                        group.slice().reverse().map((file,index)=>(
-                          <label className="flex w-full border rounded-50px py-2 px-4 cursor-pointer hover:border-lime-600 mt-[10px]" key={index}>
-                            <input type="radio" name="group"/>
-                            <p className="ml-[10px]">{file.name}</p>
-                          </label>
-                        ))
-
-                      }
-                    </div>
-                    <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={modalClose}>ok
-                    </button>
+                    <form onSubmit={sendLike}>
+                      <div className="text-sm mt-[20px] h-[160px] overflow-y-scroll">
+                        {
+                          group.slice().reverse().map((file,index)=>(
+                            <label className="flex w-full border rounded-50px py-2 px-4 cursor-pointer hover:border-lime-600 mt-[10px]" key={index}>
+                              <input type="radio" name="group" value={file.groupId}/>
+                              <p className="ml-[10px]">{file.name}</p>
+                            </label>
+                          ))
+                        }
+                      </div>
+                      <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={modalClose}>ok
+                      </button>
+                    </form>
                   </div>
                 ) : ''
               }
