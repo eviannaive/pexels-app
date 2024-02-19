@@ -8,7 +8,17 @@ export async function PATCH(req: Request){
     await connectDB();
     const {_id, photoData} = await req.json();
     const mongoId = new ObjectId(_id);
-    console.log(photoData.group,_id)
+    console.log(mongoId,photoData.gId,photoData.imgId)
+    const photoExist = await User.findOne(
+      { _id: mongoId,
+        'collections':{
+          $elemMatch: {
+            'groupId': photoData.groupId,
+            'photos': {$in: [photoData.imgId]}
+          }
+        }
+      }
+    )
     const updateData = await User.updateOne({_id: mongoId},
       {
         $addToSet: {
@@ -17,12 +27,11 @@ export async function PATCH(req: Request){
       },
       {
         arrayFilters: [
-          {'elem.groupId': photoData.group}
+          {'elem.groupId': photoData.groupId}
         ]
       }
     )
-    console.log(updateData)
-    return NextResponse.json({meg: 'update'},{status: 200})
+    return NextResponse.json({meg: photoExist ? 'photo exist' : 'update',exist: !!photoExist},{status: 200})
   }
   catch(error){
     return NextResponse.json({message: "Error", error}, {status: 500})

@@ -13,8 +13,7 @@ export default function ModdleWrapper(){
   const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId } : any = useModalContext();
   const router = useRouter();
   const [group, setGroup] = useState([]);
-  const [addGroup, setAddGroup] = useState('')
-  const { data: session, update } = useSession();
+  const { data: session } = useSession();
   let [ scope, animate] = useAnimate();
   let inputRef = useRef<HTMLInputElement>(null);
 
@@ -54,12 +53,17 @@ export default function ModdleWrapper(){
     await axios.patch("http://localhost:3000/api/category/like",{
       _id: session?.user?._id,
       photoData: {
-        group: gId,
+        groupId: gId,
         imgId: imgId
       },
-    }).then((res)=>{console.log(res)})
+    }).then((res)=>{
+      console.log(res.data.exist)
+      photoExist(res.data.exist)
+    })
+  }
 
-
+  const photoExist = (exist: boolean) => {
+    exist? setModalType('photoExist') : modalClose()
   }
 
   useEffect(()=>{
@@ -106,9 +110,20 @@ export default function ModdleWrapper(){
                           ))
                         }
                       </div>
-                      <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={modalClose}>ok
+                      <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]">ok
                       </button>
                     </form>
+                  </div>
+                ) : ''
+              }
+              {
+                modalType == 'photoExist' ? (
+                  <div>
+                    <p>
+                      The photo already exists.
+                    </p>
+                    <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={modalClose}>Understand
+                    </button>
                   </div>
                 ) : ''
               }
