@@ -19,6 +19,7 @@ import { Loading } from '@/components/Loading';
 import { NoResult } from '@/components/NoResult';
 import SearchBar from '@/components/SearchBar';
 import ImgBox from '@/components/ImgBox';
+import { Enlarge } from '@/components/Enlarge';
 
 
 
@@ -37,16 +38,23 @@ export default function Photos() {
 			firstSearch,
 			inputRef
 		} : any = useSearchContext()
-
-	const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId} : any = useModalContext()
-
-	const perPage = 12;
-
-	const modalOpen = (e: MouseEvent) => {
-    setModalShow(true);
-    session ? setModalType('like') : setModalType('login');
-    setImgId(String(e.target?.getAttribute('img-id')))
-  }
+		
+		const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId} : any = useModalContext()
+		
+		const perPage = 12;
+		
+		const [enlargeShow, setEnlargeShow] = useState(false);
+		
+		const modalOpen = (e: MouseEvent) => {
+			setModalShow(true);
+			session ? setModalType('like') : setModalType('login');
+			setImgId(String(e.target?.closest('[box-wrap]').getAttribute('img-id')))
+		}
+		
+		const handleEnlarge = (e) => {
+			setImgId(String(e.target?.closest('[box-wrap]').getAttribute('img-id')))
+			setEnlargeShow(true)
+		}
 
 	// default keyword
 	const demoList = ['cat flower','lake boat','desert night meteor','european style architecture','violin','bridge','rainbow'];
@@ -90,6 +98,7 @@ export default function Photos() {
 	const urlMemo = useMemo(()=>{
 		return new SearchPropControl()
 	},[])
+
 
 	// fetch
 	const fetchData = async ({value, url, page = 1} : {value?: string, url?: string, page?:number}) => {
@@ -163,6 +172,7 @@ export default function Photos() {
 
 	return (
 		<div className='pt-[50px] pb-[120px] px-[80px] max-w-[1500px] mx-auto'>
+			<Enlarge imgId={imgId} state={enlargeShow} setEnlargeShow={setEnlargeShow}/>
 			{ 
 				<div className={`flex justify-center items-center overflow-hidden transition-all duration-500 ${!firstSearch.current ? 'h-0 opacity-0' : 'h-[80px] opacity-1'}`}>
 					<p className={`text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-teal-600`}>Please input any keyword of your search.</p>
@@ -190,10 +200,10 @@ export default function Photos() {
 											<div className='w-[25%] border-r-2 border-b-2 border-dashed border-slate-400 p-[5px] '>
 												{
 													photosArr[index] && (
-														<div className='pb-[100%] relative group cursor-pointer overflow-hidden'>
-															<img src={photosArr[index]?.src.large} alt="" className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]'/>
+														<div className='pb-[100%] relative group cursor-pointer overflow-hidden' box-wrap="" img-id={photosArr[index]?.id}>
+															<img src={photosArr[index]?.src.large} alt="" className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]' onClick={handleEnlarge}/>
 															<div className='flex absolute bottom-3 right-2 p-[10px] opacity-0 transition duration-500 group-hover:opacity-100 flex-col gap-3'>
-																<div className='opacity-75 hover:opacity-100 transition-all' onClick={(e)=>{modalOpen(e)}} img-id={photosArr[index]?.id}>
+																<div className='opacity-75 hover:opacity-100 transition-all' onClick={modalOpen}>
 																	<FontAwesomeIcon icon={reqularHeart}  size="lg" color="#f9f9f9"/>
 																</div>
 																<div className='hidden'>

@@ -120,7 +120,7 @@ export default function ModdleWrapper(){
                 modalType == 'photoExist' ? (
                   <div>
                     <p>
-                      The photo already exists.
+                      Photo exists.
                     </p>
                     <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={modalClose}>ok
                     </button>
