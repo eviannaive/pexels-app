@@ -1,4 +1,7 @@
 import { SearchContextProvider } from '@/context/searchContext'
+import { ModalContextProvider } from "@/context/ModalContext"
+import { ModalWrapper } from "@/components/ModalWrapper";
+import { Enlarge } from '@/components/Enlarge';
 
 export default function PhotosLayout({
   children,
@@ -7,7 +10,11 @@ export default function PhotosLayout({
 }) {
   return (
     <SearchContextProvider>
-      {children}
+      <ModalContextProvider>
+        <ModalWrapper/>
+        <Enlarge/>
+        {children}
+      </ModalContextProvider>
     </SearchContextProvider>
   )
 }

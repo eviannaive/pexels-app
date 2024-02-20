@@ -3,12 +3,16 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart,faDownload  } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as reqularHeart} from "@fortawesome/free-regular-svg-icons";
-import { useSearchContext } from '@/context/searchContext';
 import { useMemo, useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
 import Pagination from '@/components/Pagination';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+
+// context
+import { useModalContext } from "@/context/ModalContext";
+import { useSearchContext } from '@/context/searchContext';
 
 // components
 import { Loading } from '@/components/Loading';
@@ -17,9 +21,12 @@ import SearchBar from '@/components/SearchBar';
 import ImgBox from '@/components/ImgBox';
 
 
+
 const pexelsKey = process.env.NEXT_PUBLIC_PEXELS_KET;
 
 export default function Photos() {
+	const { data: session } = useSession();
+
 	let {
 			setSearchBtnShow,
 			inputValue,
@@ -31,7 +38,15 @@ export default function Photos() {
 			inputRef
 		} : any = useSearchContext()
 
+	const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId} : any = useModalContext()
+
 	const perPage = 12;
+
+	const modalOpen = (e: MouseEvent) => {
+    setModalShow(true);
+    session ? setModalType('like') : setModalType('login');
+    setImgId(String(e.target?.getAttribute('img-id')))
+  }
 
 	// default keyword
 	const demoList = ['cat flower','lake boat','desert night meteor','european style architecture','violin','bridge','rainbow'];
@@ -171,14 +186,14 @@ export default function Photos() {
 								<div className='w-full'>
 									<div className='flex flex-wrap border-l-2 border-t-2 border-dashed border-slate-400 w-full'>
 										{
-											(Array(Math.ceil(photosArr.length / 4) * 4).fill(null).map((b,index)=>
+											(Array(Math.ceil(photosArr.length / 4) * 4).fill(null).map((photo,index)=>
 											<div className='w-[25%] border-r-2 border-b-2 border-dashed border-slate-400 p-[5px] '>
 												{
 													photosArr[index] && (
 														<div className='pb-[100%] relative group cursor-pointer overflow-hidden'>
 															<img src={photosArr[index]?.src.large} alt="" className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]'/>
 															<div className='flex absolute bottom-3 right-2 p-[10px] opacity-0 transition duration-500 group-hover:opacity-100 flex-col gap-3'>
-																<div className='opacity-75 hover:opacity-100 transition-all'>
+																<div className='opacity-75 hover:opacity-100 transition-all' onClick={(e)=>{modalOpen(e)}} img-id={photosArr[index]?.id}>
 																	<FontAwesomeIcon icon={reqularHeart}  size="lg" color="#f9f9f9"/>
 																</div>
 																<div className='hidden'>

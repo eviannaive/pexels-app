@@ -38,12 +38,12 @@ export default function Home() {
       marqueeData();
     }
   },[])
-  // const dataWrap = await Promise.all(Array(2).fill(null).map(d=>initPhoto()));
+
   return (
     <ModalContextProvider>
       <div className="flex flex-col w-full min-h-custom">
         <ModalWrapper/>
-        <MarqueeWrapper data={data} />
+        <MarqueeWrapper data={data}/>
         <div className='flex flex-col grow justify-center items-center my-[50px]'>
           <TextTitle text="Collect your favorite pictures." delay={1} />
           <ButtonExplore text="FIND MORE" delay={1.5} target="/photos" />

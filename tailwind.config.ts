@@ -16,6 +16,9 @@ const config: Config = {
       minHeight:{
         'custom': 'calc(calc(100vh - var(--navHeight)))'
       },
+      height: {
+        'enlarge': 'calc(100vh - 140px)'
+      },
       borderRadius: {
         '50px': '50px'
       },
