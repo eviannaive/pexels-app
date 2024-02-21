@@ -207,10 +207,7 @@ export default function Photos() {
 															<img src={photosArr[index]?.src.large} alt="" className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]' onClick={handleEnlarge} img-id={photosArr[index]?.id}/>
 															<div className='flex absolute bottom-3 right-2 p-[10px] opacity-0 transition duration-500 group-hover:opacity-100 flex-col gap-3'>
 																<div className='opacity-75 hover:opacity-100 transition-all' onClick={modalOpen}>
-																	<FontAwesomeIcon icon={reqularHeart}  size="lg" color="#f9f9f9"/>
-																</div>
-																<div className='hidden'>
-																	<FontAwesomeIcon icon={faHeart} size="lg" color="#e61e7b"/>
+																	<FontAwesomeIcon icon={faHeart} size="lg" color="#f9f9f9"/>
 																</div>
 																<div className='opacity-75 hover:opacity-100 transition-all'>
 																	<FontAwesomeIcon icon={faDownload} size="lg" color="#f9f9f9"/>
