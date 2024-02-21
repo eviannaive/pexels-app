@@ -46,7 +46,6 @@ export default function Photos() {
 		const [enlargeShow, setEnlargeShow] = useState(false);
 		
 		const modalOpen = (e: MouseEvent) => {
-			console.log('open',e.target)
 			setModalShow(true);
 			session ? setModalType('like') : setModalType('login');
 			setImgId(String(e.target?.closest('[box-wrap]').firstChild.getAttribute('img-id')))

@@ -10,9 +10,10 @@ import { useSession } from 'next-auth/react';
 import axios from "axios";
 
 export default function ModdleWrapper(){
-  const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc } : any = useModalContext();
+  let { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc } : any = useModalContext();
   const router = useRouter();
   const [group, setGroup] = useState([]);
+  const [selectGroup, setSelectGroup] = useState('00000')
   const { data: session } = useSession();
   let [ scope, animate] = useAnimate();
   let inputRef = useRef<HTMLInputElement>(null);
@@ -46,12 +47,16 @@ export default function ModdleWrapper(){
       console.log(err)
     })
   }
+
+  const onLabelChange = (e) => {
+    setSelectGroup(e.target.value)
+  }
+
   const sendLike = async(e) => {
     e.preventDefault();
-    console.log([...e.target].find(input=>input.checked))
-    const groupId = [...e.target].find(input=>input.checked)?.value;
+    // console.log([...e.target].find(input=>input.checked))
     const data = {
-      groupId,
+      groupId : selectGroup,
       imgId,
       imgSrc,
     }
@@ -68,12 +73,18 @@ export default function ModdleWrapper(){
     exist? setModalType('photoExist') : modalClose()
   }
 
+  const defaultGroup = () => {
+    const defaultGroupId = group.find(g=>(g.groupId === selectGroup));
+    defaultGroupId??setSelectGroup('00000')
+  }
+
   useEffect(()=>{
     if(modalShow){
       !group.length? setGroup(session?.user?.collections) : '';
+      defaultGroup();
       animate([[scope.current, { opacity: 1 }],['#modalBox',{ scale: 1 }]])
     }
-  },[modalShow])
+  },[modalShow,group])
   return(
     <>
       {
@@ -106,7 +117,7 @@ export default function ModdleWrapper(){
                         {
                           group.slice().reverse().map((file,index)=>(
                             <label className="flex w-full border rounded-50px py-2 px-4 cursor-pointer hover:border-lime-600 mt-[10px]" key={index}>
-                              <input type="radio" name="group" value={file.groupId}/>
+                              <input type="radio" name="group" value={file.groupId} onChange={onLabelChange} checked={file.groupId === selectGroup}/>
                               <p className="ml-[10px]">{file.name}</p>
                             </label>
                           ))

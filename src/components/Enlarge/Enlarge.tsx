@@ -32,11 +32,11 @@ export default function Enlarge({state, setEnlargeShow, eventLike}:{state: boole
   }
 
   useEffect(()=>{
-    console.log(imgSrc,'id')
     if(state){
       modalOpen()
     }
   },[state])
+
 
   return(
     <>
@@ -47,7 +47,8 @@ export default function Enlarge({state, setEnlargeShow, eventLike}:{state: boole
             <div className="flex flex-col w-full h-full justify-center items-center" onClick={(e)=>{
               e.stopPropagation();
             }} box-wrap="">
-              <img src={imgSrc} alt="" className='w-full h-enlarge object-contain opacity-0' onLoad={imgShow} onError={()=>{imgValidateError(imgId,imgOnError)}} ref={imgRef}/>
+              {/* {createImg()} */}
+              <img src={imgSrc} alt="" className='w-full h-enlarge object-contain opacity-0' onLoad={imgShow} onError={()=>{imgValidateError(imgId,imgOnError)}} ref={imgRef} img-id={imgId}/>
               <div className='flex transition duration-500 group-hover:opacity-100 gap-3 ml-auto mt-[10px]'>
                 <div className='opacity-60 hover:opacity-100 transition-all cursor-pointer' onClick={eventLike}>
                   <FontAwesomeIcon icon={faHeart} size="lg" color="#f9f9f9" className='pointer-events-none'/>
