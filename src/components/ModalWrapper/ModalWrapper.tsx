@@ -10,7 +10,7 @@ import { useSession } from 'next-auth/react';
 import axios from "axios";
 
 export default function ModdleWrapper(){
-  const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId } : any = useModalContext();
+  const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc } : any = useModalContext();
   const router = useRouter();
   const [group, setGroup] = useState([]);
   const { data: session } = useSession();
@@ -49,13 +49,15 @@ export default function ModdleWrapper(){
   const sendLike = async(e) => {
     e.preventDefault();
     console.log([...e.target].find(input=>input.checked))
-    const gId = [...e.target].find(input=>input.checked)?.value;
+    const groupId = [...e.target].find(input=>input.checked)?.value;
+    const data = {
+      groupId,
+      imgId,
+      imgSrc,
+    }
     await axios.patch("http://localhost:3000/api/category/like",{
       _id: session?.user?._id,
-      photoData: {
-        groupId: gId,
-        imgId: imgId
-      },
+      photoData: data
     }).then((res)=>{
       console.log(res.data.exist)
       photoExist(res.data.exist)

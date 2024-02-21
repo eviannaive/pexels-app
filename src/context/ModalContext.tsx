@@ -9,6 +9,7 @@ export function ModalContextProvider({children}){
   let [modalShow, setModalShow] = useState(false);
   let [modalType, setModalType] = useState('');
   let [imgId, setImgId] = useState('')
+  let [imgSrc, setImgSrc] = useState('')
   // let [ scope, animate] = useAnimate();
   // const modalShow = useMemo(()=>{
   //   console.log('memo')
@@ -16,7 +17,7 @@ export function ModalContextProvider({children}){
   // },[modalShow]);
 
   return (
-    <ModalContext.Provider value={{modalShow, setModalShow,modalType, setModalType,imgId, setImgId}}>
+    <ModalContext.Provider value={{modalShow, setModalShow,modalType, setModalType,imgId, setImgId, imgSrc, setImgSrc}}>
       {children}
     </ModalContext.Provider>
   )

@@ -9,11 +9,12 @@ import { useSession } from 'next-auth/react';
 
 export default function MarqueeWrapper({data}){
   const { data: session } = useSession();
-  const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId} : any = useModalContext()
+  const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc} : any = useModalContext()
   const modalOpen = (e: MouseEvent) => {
     setModalShow(true);
     session ? setModalType('like') : setModalType('login');
     setImgId(String(e.target?.getAttribute('img-id')))
+    setImgSrc(String(e.target?.getAttribute('src')))
   }
   return (
     <>
