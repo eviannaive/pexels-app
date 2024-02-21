@@ -78,7 +78,7 @@ export default function ModdleWrapper(){
     <>
       {
         modalShow && (
-          <div className={`fixed w-full h-full top-0 left-0 z-[100] flex bg-slate-600/70 opacity-0 justify-center items-center p-[30px] duration-300`} ref={scope} modal-type={modalType}>
+          <div className={`fixed w-full h-full top-0 left-0 z-[1000] flex bg-slate-600/70 opacity-0 justify-center items-center p-[30px] duration-300`} ref={scope} modal-type={modalType}>
             <div className="w-full max-w-80 bg-white rounded-2xl p-[30px] text-lg relative text-default text-center scale-0 duration-300" id="modalBox">
               <button className="bg-stone-700 text-white rounded-full absolute w-[40px] h-[40px] top-[-10px] right-[-10px] flex-center" onClick={modalClose}>✕</button>
               {

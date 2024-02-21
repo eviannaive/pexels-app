@@ -46,6 +46,7 @@ export default function Photos() {
 		const [enlargeShow, setEnlargeShow] = useState(false);
 		
 		const modalOpen = (e: MouseEvent) => {
+			console.log('open',e.target)
 			setModalShow(true);
 			session ? setModalType('like') : setModalType('login');
 			setImgId(String(e.target?.closest('[box-wrap]').firstChild.getAttribute('img-id')))
@@ -174,7 +175,7 @@ export default function Photos() {
 
 	return (
 		<div className='pt-[50px] pb-[120px] px-[80px] max-w-[1500px] mx-auto'>
-			<Enlarge state={enlargeShow} setEnlargeShow={setEnlargeShow}/>
+			<Enlarge state={enlargeShow} setEnlargeShow={setEnlargeShow} eventLike={modalOpen}/>
 			{ 
 				<div className={`flex justify-center items-center overflow-hidden transition-all duration-500 ${!firstSearch.current ? 'h-0 opacity-0' : 'h-[80px] opacity-1'}`}>
 					<p className={`text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-teal-600`}>Please input any keyword of your search.</p>
