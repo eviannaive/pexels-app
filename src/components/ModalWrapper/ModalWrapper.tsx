@@ -8,6 +8,8 @@ import { useAnimate } from "framer-motion"
 import { ButtonDefault } from "../Buttons";
 import { useSession } from 'next-auth/react';
 import axios from "axios";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheckToSlot } from "@fortawesome/free-solid-svg-icons";
 
 export default function ModdleWrapper(){
   let { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc } : any = useModalContext();
@@ -18,8 +20,11 @@ export default function ModdleWrapper(){
   let [ scope, animate] = useAnimate();
   let inputRef = useRef<HTMLInputElement>(null);
 
-  const modalClose = async() => {
+  const modalClose = async(callback ?: ()=>void) => {
     if(modalShow){
+      console.log(callback,'callback')
+      callback?.();
+      await delay(300);
       await animate([['#modalBox',{ scale: 0}],[scope.current, { opacity: 0 }]])
       setModalShow(false)
     }
@@ -70,17 +75,18 @@ export default function ModdleWrapper(){
   }
 
   const photoExist = (exist: boolean) => {
-    exist? setModalType('photoExist') : modalClose()
+    exist? setModalType('photoExist') : modalClose(async()=>{setModalType('checked')})
   }
 
   const defaultGroup = () => {
-    const defaultGroupId = group.find(g=>(g.groupId === selectGroup));
+    const defaultGroupId = group?.find(g=>(g.groupId === selectGroup));
     defaultGroupId??setSelectGroup('00000')
   }
 
   useEffect(()=>{
+    console.log(group,'group')
     if(modalShow){
-      !group.length? setGroup(session?.user?.collections) : '';
+      !group?.length? setGroup(session?.user?.collections) : '';
       defaultGroup();
       animate([[scope.current, { opacity: 1 }],['#modalBox',{ scale: 1 }]])
     }
@@ -91,7 +97,7 @@ export default function ModdleWrapper(){
         modalShow && (
           <div className={`fixed w-full h-full top-0 left-0 z-[1000] flex bg-slate-600/70 opacity-0 justify-center items-center p-[30px] duration-300`} ref={scope} modal-type={modalType}>
             <div className="w-full max-w-80 bg-white rounded-2xl p-[30px] text-lg relative text-default text-center scale-0 duration-300" id="modalBox">
-              <button className="bg-stone-700 text-white rounded-full absolute w-[40px] h-[40px] top-[-10px] right-[-10px] flex-center" onClick={modalClose}>✕</button>
+              <button className="bg-stone-700 text-white rounded-full absolute w-[40px] h-[40px] top-[-10px] right-[-10px] flex-center" onClick={()=>{modalClose()}}>✕</button>
               {
                 modalType == 'login' ? (
                   <div>
@@ -130,12 +136,23 @@ export default function ModdleWrapper(){
                 ) : ''
               }
               {
-                modalType == 'photoExist' ? (
+                modalType === 'checked' && (
+                  (
+                    <div className="py-[60px]">
+                      <div className="w-[120px] h-[120px] border-2 p-[20px] border-spacing-10 rounded-full flex justify-center items-center m-auto">
+                        <FontAwesomeIcon icon={faCheckToSlot} color="#1f987d" size="3x"/>
+                      </div>
+                    </div>
+                  )
+                )
+              }
+              {
+                modalType === 'photoExist' ? (
                   <div>
                     <p>
                       Photo exists.
                     </p>
-                    <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={modalClose}>ok
+                    <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={()=>{modalClose()}}>ok
                     </button>
                   </div>
                 ) : ''
