@@ -24,7 +24,7 @@ export default function ModdleWrapper(){
     if(modalShow){
       console.log(callback,'callback')
       callback?.();
-      await delay(300);
+      callback? await delay(500) : ''
       await animate([['#modalBox',{ scale: 0}],[scope.current, { opacity: 0 }]])
       setModalShow(false)
     }

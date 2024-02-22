@@ -43,7 +43,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <Nav list={navData}/>
-          <main className="w-full min-h-screen pt-[68px] bg-fixed bg-[length:250%_250%] bg-gradient-to-br from-orange-400/15 via-violet-700/15 to-cyan-700/30 animate-[bgLinear_30s_infinite]">
+          <main className="w-full min-h-screen pt-[56px] bg-fixed bg-[length:250%_250%] bg-gradient-to-br from-orange-400/15 via-violet-700/15 to-cyan-700/30 animate-[bgLinear_30s_infinite]">
             {children}
           </main>
         </AuthProvider>
