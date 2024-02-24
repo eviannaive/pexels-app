@@ -11,7 +11,7 @@ import { AxiosResponse } from 'axios';
 export default function Enlarge({state, setEnlargeShow, eventLike}:{state: boolean, setEnlargeShow: Dispatch<SetStateAction<boolean>>, eventLike: (e:MouseEvent)=>void}){
   let [ scope, animate] = useAnimate();
   let imgRef = useRef<any>(null)
-  let { imgId, imgSrc, setImgSrc} : any = useModalContext();
+  let { imgId, imgSrc, setImgSrc, downloadImg} : any = useModalContext();
 
   const imgShow = async() => {
     await animate([[imgRef.current, { opacity: 1 }]])
@@ -53,9 +53,7 @@ export default function Enlarge({state, setEnlargeShow, eventLike}:{state: boole
                 <div className='opacity-60 hover:opacity-100 transition-all cursor-pointer' onClick={eventLike}>
                   <FontAwesomeIcon icon={faHeart} size="lg" color="#f9f9f9" className='pointer-events-none'/>
                 </div>
-                <div className='hidden'>
-                </div>
-                <div className='opacity-75 hover:opacity-100 transition-all cursor-pointer'>
+                <div className='opacity-75 hover:opacity-100 transition-all cursor-pointer' onClick={downloadImg}>
                   <FontAwesomeIcon icon={faDownload} size="lg" color="#f9f9f9" className='pointer-events-none'/>
                 </div>
               </div>

@@ -39,7 +39,7 @@ export default function Photos() {
 			inputRef
 		} : any = useSearchContext()
 		
-		const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc} : any = useModalContext()
+		const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc,downloadImg} : any = useModalContext()
 		
 		const perPage = 12;
 		
@@ -208,7 +208,7 @@ export default function Photos() {
 																<div className='opacity-75 hover:opacity-100 transition-all' onClick={modalOpen}>
 																	<FontAwesomeIcon icon={faHeart} size="lg" color="#f9f9f9"/>
 																</div>
-																<div className='opacity-75 hover:opacity-100 transition-all'>
+																<div className='opacity-75 hover:opacity-100 transition-all' onClick={downloadImg}>
 																	<FontAwesomeIcon icon={faDownload} size="lg" color="#f9f9f9"/>
 																</div>
 															</div>
