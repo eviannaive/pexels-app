@@ -53,7 +53,7 @@ export default function Enlarge({state, setEnlargeShow, eventLike}:{state: boole
                 <div className='opacity-60 hover:opacity-100 transition-all cursor-pointer' onClick={eventLike}>
                   <FontAwesomeIcon icon={faHeart} size="lg" color="#f9f9f9" className='pointer-events-none'/>
                 </div>
-                <div className='opacity-75 hover:opacity-100 transition-all cursor-pointer' onClick={downloadImg}>
+                <div className='opacity-75 hover:opacity-100 transition-all cursor-pointer' onClick={()=>{downloadImg(imgId,imgSrc)}}>
                   <FontAwesomeIcon icon={faDownload} size="lg" color="#f9f9f9" className='pointer-events-none'/>
                 </div>
               </div>

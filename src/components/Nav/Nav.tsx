@@ -13,7 +13,7 @@ import delay from "@/lib/delay";
 import Image from "next/image";
 
 const logItem = {
-    name: 'LOG IN',
+    name: 'login',
     link: '/login',
     icon: 'faRightToBracket'
   };
@@ -41,8 +41,8 @@ const Nav = ({list}) => {
 
 
   return (
-  <nav className='fixed top-0 left-0 w-full flex justify-end text-lg gap-x-5 px-5 py-2 bg-gradient-to-r from-sky-300 to-teal-700 z-10 h-[var(--navHeight)]'>
-    <Link href="/" className="mr-auto">
+  <nav className='fixed top-0 left-0 w-full flex justify-end text-lg gap-x-5 px-5 py-2 bg-gradient-to-r from-sky-300 to-teal-700 z-10 h-[var(--navHeight)] max-[600px]:gap-x-3'>
+    <Link href="/" className="mr-auto flex-center">
       <Image width="40" height="40" src="/logo.png"></Image>
     </Link>
     {list.map((li,index)=><NavList key={index} listData={li}/>)}

@@ -12,10 +12,10 @@ type ListData = {
 export default function NavList({listData} : {listData : ListData}){
   return (
       <Link href={listData.link} className="flex items-center text-slate-200 font-medium group transition-all">
-        <span className="opacity-90 group-hover:opacity-100">
+        <span className="opacity-90 group-hover:opacity-100 max-[600px]:hidden">
           <FontAwesomeIcon icon={icons[listData.icon] as IconDefinition} size="lg" color="#fad0d2" />
         </span>
-        <p className="ml-2 group-hover:text-white">
+        <p className="ml-2 group-hover:text-white max-[600px]:text-base">
           {listData.name}
         </p>
       </Link>

@@ -8,7 +8,7 @@ import AuthProvider from "@/context/AuthProvider"
 const inter = Inter({ subsets: ['latin'] })
 const navData = [
   {
-    name: 'PHOTOS',
+    name: 'Photos',
     link: '/photos',
     icon: 'faCameraRetro'
   },

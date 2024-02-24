@@ -25,6 +25,12 @@ import { Enlarge } from '@/components/Enlarge';
 
 const pexelsKey = process.env.NEXT_PUBLIC_PEXELS_KET;
 
+const gridBreakpoints = {
+	'768': 4,
+	'450': 3,
+	'0': 2
+}
+
 export default function Photos() {
 	const { data: session } = useSession();
 
@@ -42,14 +48,38 @@ export default function Photos() {
 		const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc,downloadImg} : any = useModalContext()
 		
 		const perPage = 12;
-		
+	
 		const [enlargeShow, setEnlargeShow] = useState(false);
-		
+		const [winSize, setWinSize] = useState({
+			width: 0,
+			height: 0
+		})
+		const [gridCol, setGridCol ] = useState(4)
+	
+		const findBreakpoints = () => {
+			const key = Object.keys(gridBreakpoints).reverse().find((b)=>window.innerWidth>Number(b))
+			setGridCol(gridBreakpoints[key]);
+			console.log(gridBreakpoints[key],'keyyyyyys',window.innerWidth,Object.keys(gridBreakpoints).reverse())
+		} 
+
+		const windowResize = () => {
+			console.log('thishssssssssssss')
+			return {
+				width: window.innerWidth,
+				height: window.innerHeight
+			}
+		}
+
 		const modalOpen = (e: MouseEvent) => {
 			setModalShow(true);
 			session ? setModalType('like') : setModalType('login');
 			setImgId(String(e.target?.closest('[box-wrap]').firstChild.getAttribute('img-id')))
 			setImgSrc(String(e.target?.closest('[box-wrap]').firstChild.getAttribute('src')))
+		}
+
+		const handleDownload = (e) => {
+			console.log(String(e.target?.closest('[box-wrap]').firstChild.getAttribute('img-id')),String(e.target?.closest('[box-wrap]').firstChild.getAttribute('src')))
+			downloadImg(String(e.target?.closest('[box-wrap]').firstChild.getAttribute('img-id')),String(e.target?.closest('[box-wrap]').firstChild.getAttribute('src')))
 		}
 		
 		const handleEnlarge = (e) => {
@@ -139,8 +169,22 @@ export default function Photos() {
 			const randomKeyword = demoList[Math.floor(Math.random()*demoList.length)]
 			initFetch.current = randomKeyword;
 			fetchData({value: query??randomKeyword, page: Number(page)});
-		}
+		};
+
+		window.addEventListener('resize',()=>{
+			console.log('resize')
+			setWinSize(windowResize());
+			findBreakpoints()
+		})
+
+		return ()=>{setWinSize(windowResize());findBreakpoints()}
 	},[]) 
+
+	useEffect(()=>{
+		console.log('gridcolllllll')
+
+	},[gridCol])
+
 
 	// pagination event
 	class PaginationControl {
@@ -173,14 +217,14 @@ export default function Photos() {
 	},[resultInfo])
 
 	return (
-		<div className='pt-[50px] pb-[120px] px-[80px] max-w-[1500px] mx-auto'>
+		<div className='pt-[50px] pb-[80px] px-[40px] max-w-[1500px] mx-auto max-[840px]:px-[20px] max-[840px]:pb-[60px]'>
 			<Enlarge state={enlargeShow} setEnlargeShow={setEnlargeShow} eventLike={modalOpen}/>
 			{ 
 				<div className={`flex justify-center items-center overflow-hidden transition-all duration-500 ${!firstSearch.current ? 'h-0 opacity-0' : 'h-[80px] opacity-1'}`}>
-					<p className={`text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-teal-600`}>Please input any keyword of your search.</p>
+					<p className={`text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-teal-600 max-[840px]:text-2xl`}>Please input any keyword of your search.</p>
 				</div>
 			}
-			<div className='text-center mt-[30px] mb-[50px]'>
+			<div className='text-center mt-[30px] mb-[50px] max-[840px]:mt-[0] max-[840px]:mb-[40px]'>
 				<SearchBar event={searchHandler}/>
 			</div>
 			{
@@ -198,8 +242,8 @@ export default function Photos() {
 								<div className='w-full'>
 									<div className='flex flex-wrap border-l-2 border-t-2 border-dashed border-slate-400 w-full'>
 										{
-											(Array(Math.ceil(photosArr.length / 4) * 4).fill(null).map((photo,index)=>
-											<div className='w-[25%] border-r-2 border-b-2 border-dashed border-slate-400 p-[5px] '>
+											(Array(Math.ceil(photosArr.length / gridCol) * gridCol).fill(null).map((photo,index)=>
+											<div className={` border-r-2 border-b-2 border-dashed border-slate-400 p-[5px]`} style={{width: Math.round(100 / gridCol * 100) / 100 + '%'}}>
 												{
 													photosArr[index] && (
 														<div className='pb-[100%] relative group cursor-pointer overflow-hidden' box-wrap="">
@@ -208,7 +252,7 @@ export default function Photos() {
 																<div className='opacity-75 hover:opacity-100 transition-all' onClick={modalOpen}>
 																	<FontAwesomeIcon icon={faHeart} size="lg" color="#f9f9f9"/>
 																</div>
-																<div className='opacity-75 hover:opacity-100 transition-all' onClick={downloadImg}>
+																<div className='opacity-75 hover:opacity-100 transition-all' onClick={handleDownload}>
 																	<FontAwesomeIcon icon={faDownload} size="lg" color="#f9f9f9"/>
 																</div>
 															</div>
