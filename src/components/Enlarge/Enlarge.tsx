@@ -8,7 +8,7 @@ import { useModalContext } from "@/context/ModalContext";
 import imgValidateError from '@/lib/imgValidateError'
 import { AxiosResponse } from 'axios';
 
-export default function Enlarge({state, setEnlargeShow, eventLike}:{state: boolean, setEnlargeShow: Dispatch<SetStateAction<boolean>>, eventLike: (e:MouseEvent)=>void}){
+export default function Enlarge({state, setEnlargeShow, eventLike}:{state: boolean, setEnlargeShow: Dispatch<SetStateAction<boolean>>, eventLike?: (e:MouseEvent)=>void}){
   let [ scope, animate] = useAnimate();
   let imgRef = useRef<any>(null)
   let { imgId, imgSrc, setImgSrc, downloadImg} : any = useModalContext();
@@ -50,9 +50,11 @@ export default function Enlarge({state, setEnlargeShow, eventLike}:{state: boole
               {/* {createImg()} */}
               <img src={imgSrc} alt="" className='w-full h-enlarge object-contain opacity-0' onLoad={imgShow} onError={()=>{imgValidateError(imgId,imgOnError)}} ref={imgRef} img-id={imgId}/>
               <div className='flex transition duration-500 group-hover:opacity-100 gap-3 ml-auto mt-[10px]'>
-                <div className='opacity-60 hover:opacity-100 transition-all cursor-pointer' onClick={eventLike}>
+                {
+                  eventLike && (<div className='opacity-60 hover:opacity-100 transition-all cursor-pointer' onClick={eventLike}>
                   <FontAwesomeIcon icon={faHeart} size="lg" color="#f9f9f9" className='pointer-events-none'/>
-                </div>
+                  </div>)
+                }
                 <div className='opacity-75 hover:opacity-100 transition-all cursor-pointer' onClick={()=>{downloadImg(imgId,imgSrc)}}>
                   <FontAwesomeIcon icon={faDownload} size="lg" color="#f9f9f9" className='pointer-events-none'/>
                 </div>

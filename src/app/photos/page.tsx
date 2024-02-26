@@ -2,7 +2,6 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart,faDownload  } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as reqularHeart} from "@fortawesome/free-regular-svg-icons";
 import { useMemo, useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
