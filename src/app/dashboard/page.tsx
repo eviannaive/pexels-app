@@ -9,6 +9,7 @@ import 'swiper/css/navigation';
 import imgValidateError from '@/lib/imgValidateError';
 import { useModalContext } from "@/context/ModalContext";
 import { Enlarge } from '@/components/Enlarge';
+import axios from 'axios';
 	
 export default function Dashboard() {
 	const { data: session, status, update } = useSession();
@@ -35,9 +36,24 @@ export default function Dashboard() {
 		downloadImg(String(e.target?.closest('[box-wrap]').firstChild.getAttribute('img-id')),String(e.target?.closest('[box-wrap]').firstChild.getAttribute('src')))
 	}
 
+	const deletePhoto = async(e) => {
+		const group = session?.user.collections[groupIndex].groupId;
+		const img = String(e.target?.closest('[box-wrap]').firstChild.getAttribute('img-id'))
+		const data = {
+      groupId: group,
+      imgId: img
+    }
+		await axios.patch("http://localhost:3000/api/category/unlike",{
+      _id: session?.user?._id,
+      photoData: data
+    }).then((res)=>{
+      console.log(res.data)
+			update()
+    })
+  }
+
 	useEffect(()=>{
 		update()
-		console.log('dashboard',session.user.collections)
 	},[])
 	return (
 		<div className='py-[60px] px-[20px] relative'>
@@ -95,7 +111,7 @@ export default function Dashboard() {
 											{
 												editMode && (
 												<div className='absolute top-[15px] right-[15px] transition group-hover:opacity-100'>
-													<div className='opacity-100 transition-all w-[30px] h-[30px] flex-center bg-rose-300 rounded-full hover:bg-rose-500' onClick={handleDownload}>
+													<div className='opacity-100 transition-all w-[30px] h-[30px] flex-center bg-rose-400 rounded-full hover:bg-rose-600' onClick={deletePhoto}>
 														<FontAwesomeIcon icon={faTrash} size="md" color="#f9f9f9"/>
 													</div>
 												</div>
@@ -110,11 +126,6 @@ export default function Dashboard() {
 													</div>
 												)
 											}
-											{
-												
-											}
-											
-
 											<div className='absolute-center w-[101%] h-[101%] border-4 border-orange-300 opacity-0 group-hover:opacity-100 pointer-events-none transition duration-300 z-10'></div>
 										</div>
 									</div>
