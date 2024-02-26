@@ -8,7 +8,10 @@ export async function PATCH(req: Request){
     await connectDB();
     const {_id, photoData} = await req.json();
     const mongoId = new ObjectId(_id);
-    console.log(mongoId,photoData.groupId,photoData.imgId,photoData.imgSrc,'00000')
+    if(!photoData.imgId || !photoData.imgSrc){
+      console.log(photoData.imgId,photoData.imgSrc)
+      return NextResponse.json({message: "fail"}, {status: 500})
+    }
     const photoExist = await User.findOne(
       { _id: mongoId,
         'collections':{

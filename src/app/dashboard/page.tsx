@@ -10,13 +10,15 @@ import imgValidateError from '@/lib/imgValidateError';
 import { useModalContext } from "@/context/ModalContext";
 import { Enlarge } from '@/components/Enlarge';
 import axios from 'axios';
+import delay from '@/lib/delay';
 	
 export default function Dashboard() {
 	const { data: session, status, update } = useSession();
 	const swiperRef = useRef();
 	const [ groupIndex,setGroupIndex ] = useState(0);
 	const [ enlargeShow, setEnlargeShow ] = useState(false);
-	const [ editMode, setEditMode ] = useState(false)
+	const [ editMode, setEditMode ] = useState(false);
+	const [ fixedItem, setFixedItem] = useState(false);
 	// const [ editGroupData, setEditGroupData ] = useState({
 	// 	id: '',
 	// 	name: '',
@@ -39,6 +41,12 @@ export default function Dashboard() {
 
 	const handleDownload = (e) => {
 		downloadImg(String(e.target?.closest('[box-wrap]').firstChild.getAttribute('img-id')),String(e.target?.closest('[box-wrap]').firstChild.getAttribute('src')))
+	}
+
+	const handleEdit = async() => {
+		setEditMode(!editMode);
+		await(500);
+		swiperRef.current.update()
 	}
 
 	const deletePhoto = async(e) => {
@@ -67,7 +75,9 @@ export default function Dashboard() {
 	}
 
 	useEffect(()=>{
-		update()
+		window.addEventListener('scroll',(e)=>{
+			window.scrollY >= 180 ? setFixedItem(true) : setFixedItem(false)
+		})
 	},[])
 	return (
 		<div className='py-[60px] px-[20px] relative'>
@@ -91,14 +101,14 @@ export default function Dashboard() {
 			} */}
 			{
 				session? (
-					<div className='bg-white rounded-lg w-full p-[20px] relative'>
-						<button className={`flex items-center gap-1 absolute rounded-50px border border-orange-300 bg-orange-300 text-white py-[2px] px-[10px] top-[-15px] right-[10px] transition duration-300 hover:text-slate-600 ${editMode?'text-fuchsia-800 hover:text-fuchsia-800' : ''}`} onClick={()=>{setEditMode(!editMode)}}>
+					<div className='bg-white rounded-lg w-full p-[20px] relative max-[576px]:px-[10px]'>
+						<button className={`flex items-center gap-1 absolute rounded-50px border border-orange-300 bg-orange-300 py-[2px] px-[10px] top-[-15px] right-[10px] transition duration-300 ${editMode?'text-fuchsia-800 hover:text-fuchsia-800' : 'text-white hover:text-slate-600'}`} onClick={handleEdit}>
 							<div>Edit</div>
 							<FontAwesomeIcon icon={faPenToSquare}/>
 						</button>
-						<div>
+						<div className={`${fixedItem?'fixed-controlbar': ''}`}>
 							<div className='flex relative text-default items-center py-[10px]'>
-								<button onClick={()=> swiperRef.current.slidePrev()} className='w-[30px] h-[30px]'>
+								<button onClick={()=> swiperRef.current.slidePrev()} className='w-[30px] h-[30px] shrink-0 max-[840px]:w-[20px]'>
 									<FontAwesomeIcon icon={faCaretLeft}/>
 								</button>
 								<Swiper spaceBetween={10} slidesPerView='auto' onSwiper={(swiper) => swiperRef.current = swiper}>
@@ -124,7 +134,7 @@ export default function Dashboard() {
 										))
 									}
 								</Swiper>
-								<button onClick={()=> swiperRef.current.slideNext()} className='w-[30px] h-[30px]'>
+								<button onClick={()=> swiperRef.current.slideNext()} className='w-[30px] h-[30px] shrink-0 max-[840px]:w-[20px]'>
 									<FontAwesomeIcon icon={faCaretRight}/>
 								</button>
 							</div>
@@ -140,7 +150,7 @@ export default function Dashboard() {
 												editMode && (
 												<div className='absolute top-[15px] right-[15px] transition group-hover:opacity-100'>
 													<div className='opacity-100 transition-all w-[30px] h-[30px] flex-center bg-rose-400 rounded-full hover:bg-rose-600' onClick={deletePhoto}>
-														<FontAwesomeIcon icon={faTrash} size="md" color="#f9f9f9"/>
+														<FontAwesomeIcon icon={faTrash} size="sm" color="#f9f9f9"/>
 													</div>
 												</div>
 												)

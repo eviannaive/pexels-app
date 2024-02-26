@@ -9,7 +9,7 @@ import { ButtonDefault } from "../Buttons";
 import { useSession } from 'next-auth/react';
 import axios from "axios";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckToSlot } from "@fortawesome/free-solid-svg-icons";
+import { faCheckToSlot,faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 
 export default function ModdleWrapper(){
@@ -60,7 +60,6 @@ export default function ModdleWrapper(){
 
   const sendLike = async(e) => {
     e.preventDefault();
-    // console.log([...e.target].find(input=>input.checked))
     const data = {
       groupId : selectGroup,
       imgId,
@@ -70,8 +69,11 @@ export default function ModdleWrapper(){
       _id: session?.user?._id,
       photoData: data
     }).then((res)=>{
-      console.log(res.data.exist)
-      photoExist(res.data.exist)
+      if(res.statusText === 'OK'){
+        photoExist(res.data.exist)
+      }else{
+        console.log('error')
+      }
     })
   }
 
@@ -85,10 +87,6 @@ export default function ModdleWrapper(){
   }
 
   const changeGroupName = async() => {
-    console.log('data',{
-      _id: session?.user?._id,
-      ...memoData
-    })
 		await axios.patch("http://localhost:3000/api/category/rename",{
       _id: session?.user?._id,
       groupData: {
@@ -187,6 +185,21 @@ export default function ModdleWrapper(){
                     </button>
                   </div>
                 ) : ''
+              }
+              {
+                modalType === 'fail' ? 
+                (
+                  <div className="py-[60px]">
+                    <div className="h-[120px] p-[20px] rounded-full flex flex-col justify-center items-center m-auto">
+                      <FontAwesomeIcon icon={faTriangleExclamation} color="#cd3c56" size="4x"/>
+                      <p className="mt-[20px] w-full">FAIL</p>
+                      <p className="w-full">Please try again.</p>
+                      <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={()=>{modalClose()}}>Understand.
+                    </button>
+                    </div>
+                  </div>
+                )
+                : ''
               }
               {
                 modalType === 'success' ? 

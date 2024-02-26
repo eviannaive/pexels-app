@@ -242,12 +242,12 @@ export default function Photos() {
 									<div className='flex flex-wrap border-l-2 border-t-2 border-dashed border-slate-400 w-full'>
 										{
 											(Array(Math.ceil(photosArr.length / gridCol) * gridCol).fill(null).map((photo,index)=>
-											<div className={` border-r-2 border-b-2 border-dashed border-slate-400 p-[5px]`} style={{width: Math.round(100 / gridCol * 100) / 100 + '%'}}>
+											<div className={` border-r-2 border-b-2 border-dashed border-slate-400 p-[5px]`} style={{width: Math.round(100 / gridCol * 100) / 100 + '%'}} key={index}>
 												{
 													photosArr[index] && (
 														<div className='pb-[100%] relative group cursor-pointer overflow-hidden' box-wrap="">
-															<img src={photosArr[index]?.src.large} alt="" className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]' onClick={handleEnlarge} img-id={photosArr[index]?.id}/>
-															<div className='flex absolute bottom-3 right-2 p-[10px] opacity-0 transition duration-500 group-hover:opacity-100 flex-col gap-3'>
+															<img src={photosArr[index]?.src.large} alt="" className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]' onClick={handleEnlarge} img-id={photosArr[index]?.id} alt={photosArr[index].alt}/>
+															<div className='flex absolute bottom-3 right-2 p-[10px] opacity-0 transition duration-500 group-hover:opacity-100 flex-col gap-3 max-[840px]:gap-1 max-[840px]:right-1 max-[840px]:bottom-1'>
 																<div className='opacity-75 hover:opacity-100 transition-all' onClick={modalOpen}>
 																	<FontAwesomeIcon icon={faHeart} size="lg" color="#f9f9f9"/>
 																</div>
