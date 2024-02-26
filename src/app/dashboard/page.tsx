@@ -3,7 +3,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { Swiper, SwiperSlide, useSwiper } from 'swiper/react';
 import { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretLeft, faCaretRight, faPenToSquare, faDownload, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCaretLeft, faCaretRight, faPenToSquare, faDownload, faTrash, faPen } from "@fortawesome/free-solid-svg-icons";
 import 'swiper/css';
 import 'swiper/css/navigation';
 import imgValidateError from '@/lib/imgValidateError';
@@ -17,7 +17,12 @@ export default function Dashboard() {
 	const [ groupIndex,setGroupIndex ] = useState(0);
 	const [ enlargeShow, setEnlargeShow ] = useState(false);
 	const [ editMode, setEditMode ] = useState(false)
-	const { imgId, setImgId, imgSrc, setImgSrc, downloadImg} : any = useModalContext()
+	// const [ editGroupData, setEditGroupData ] = useState({
+	// 	id: '',
+	// 	name: '',
+	// 	newName: ''
+	// })
+	const { modalShow, setModalShow, modalType, setModalType,imgId, setImgId, imgSrc, setImgSrc, downloadImg,memoData, setMemoData} : any = useModalContext()
 	const imgLoadError = (id) => {
 		imgValidateError(id,(res)=>{
 			console.log(res)
@@ -51,6 +56,15 @@ export default function Dashboard() {
 			update()
     })
   }
+
+	const handleChangeName = (e) =>{
+		const id = e.target.closest('[goroup-id]').getAttribute('goroup-id');
+		const group = session?.user.collections.find((g)=>g.groupId === id)
+		setMemoData(group)
+		setModalType('changeName')
+		setModalShow(true)
+		const input = e.target.closest('[goroup-id]').querySelector('input');
+	}
 
 	useEffect(()=>{
 		update()
@@ -91,7 +105,21 @@ export default function Dashboard() {
 									{
 										session.user.collections.map((g,index)=>(
 											<SwiperSlide style={{width: 'auto'}} key={index}>
-												<div className={`px-[20px] rounded-50px border border-teal-400 transition duration-300 hover:bg-teal-500 hover:text-white cursor-pointer ${index===groupIndex? 'bg-teal-500 text-white' : ''}`} goroup-id={g.groupId} onClick={()=>setGroupIndex(index)}>{g.name}</div>
+												<div className={`flex items-center rounded-50px border border-teal-400 transition duration-300 hover:bg-teal-500 hover:text-white cursor-pointer py-[2px] ${index===groupIndex? 'bg-teal-500 text-white' : ''} ${editMode?'px-[10px]':'px-[20px]'}`} goroup-id={g.groupId} onClick={()=>setGroupIndex(index)}>
+													<span>{g.name}</span>
+													{
+														editMode && (
+															<>
+																<button className='ml-[6px] w-[20px] h-[20px] rounded-full bg-white/70 flex-center border border-slate-400/50 hover:bg-white/100 hover:border-teal-500/50' onClick={handleChangeName}>
+																	<FontAwesomeIcon icon={faPen} color="#da7d8d" size="2xs"/>
+																</button>
+																<button className='ml-[3px] w-[20px] h-[20px] rounded-full bg-white/70 flex-center hover:bg-white/100 border border-slate-400/50 hover:bg-white/100 hover:border-teal-500/50'>
+																	<FontAwesomeIcon icon={faTrash} color="#da7d8d" size="2xs"/>
+																</button>
+															</>
+														)
+													}
+												</div>
 											</SwiperSlide>
 										))
 									}

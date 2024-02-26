@@ -10,13 +10,14 @@ import { useSession } from 'next-auth/react';
 import axios from "axios";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckToSlot } from "@fortawesome/free-solid-svg-icons";
+import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 
 export default function ModdleWrapper(){
-  let { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc } : any = useModalContext();
+  let { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc,memoData, setMemoData } : any = useModalContext();
   const router = useRouter();
   const [group, setGroup] = useState([]);
   const [selectGroup, setSelectGroup] = useState('00000')
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   let [ scope, animate] = useAnimate();
   let inputRef = useRef<HTMLInputElement>(null);
 
@@ -81,6 +82,23 @@ export default function ModdleWrapper(){
   const defaultGroup = () => {
     const defaultGroupId = group?.find(g=>(g.groupId === selectGroup));
     defaultGroupId??setSelectGroup('00000')
+  }
+
+  const changeGroupName = async() => {
+    console.log('data',{
+      _id: session?.user?._id,
+      ...memoData
+    })
+		await axios.patch("http://localhost:3000/api/category/rename",{
+      _id: session?.user?._id,
+      groupData: {
+        ...memoData
+      }
+    }).then(async(res)=>{
+      console.log(res.data)
+      await modalClose(async()=>{setModalType('success')})
+			update()
+    })
   }
 
   useEffect(()=>{
@@ -156,6 +174,31 @@ export default function ModdleWrapper(){
                     </button>
                   </div>
                 ) : ''
+              }
+              {
+                modalType === 'changeName' ? (
+                  <div>
+                    <input type="aaaaaa" value={memoData.name} className="border-2 rounded-md px-2 text-default" onChange={(e)=>{setMemoData({
+                        ...memoData,
+                        name:e.target.value
+                      })
+                    }}/>
+                    <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={changeGroupName}>update
+                    </button>
+                  </div>
+                ) : ''
+              }
+              {
+                modalType === 'success' ? 
+                (
+                  <div className="py-[60px]">
+                    <div className="w-[120px] h-[120px] p-[20px] rounded-full flex flex-col justify-center items-center m-auto">
+                      <FontAwesomeIcon icon={faCircleCheck} color="#1f987d" size="4x"/>
+                      <p className="mt-[20px]">UPDATE SUCCESSFUL</p>
+                    </div>
+                  </div>
+                )
+                : ''
               }
             </div>
           </div>
