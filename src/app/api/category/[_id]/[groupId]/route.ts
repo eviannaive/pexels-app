@@ -4,7 +4,10 @@ import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 
 // 加入最愛
-export async function POST(req: Request, { params } : {params: any}){
+export async function POST(req: Request, { params } : {params: {
+  _id: string,
+  groupId: string
+}}){
   try{
     await connectDB();
     const {_id, groupId} = params;

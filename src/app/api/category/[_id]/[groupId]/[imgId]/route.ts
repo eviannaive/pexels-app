@@ -4,7 +4,11 @@ import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 
 // 移除最愛
-export async function DELETE(req: Request, { params } : {params: any}){
+export async function DELETE(req: Request, { params } : {params: {
+  _id: string,
+  groupId: string,
+  imgId: string
+}}){
   try{
     await connectDB();
     const {_id, groupId, imgId} = params;
@@ -25,7 +29,6 @@ export async function DELETE(req: Request, { params } : {params: any}){
         ]
       }
     )
-    console.log(updateData)
     return NextResponse.json({meg: 'delete successful!'},{status: 200})
   }
   catch(error){

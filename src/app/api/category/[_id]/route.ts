@@ -5,7 +5,9 @@ import { ObjectId } from "mongodb";
 import { nanoid } from "nanoid";
 
 // 新增 group
-export async function POST(req: Request,{params}:{params: any}){
+export async function POST(req: Request,{params}:{params: {
+  _id: string
+}}){
   try{
     await connectDB();
     const { _id } = params;

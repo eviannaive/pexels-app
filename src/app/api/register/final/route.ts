@@ -8,7 +8,6 @@ export async function POST(req: Request){
     await connectDB();
     const data = await req.json();
     const password = await bcrypt.hash(data.password, 10)
-    console.log(data,password )
     const createUser = await User.create({
       name: data.name,
       email: data.email,
