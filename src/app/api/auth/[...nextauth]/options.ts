@@ -6,6 +6,7 @@ import User from '@/models/User'
 import bcrypt from 'bcrypt'
 import { connectDB } from "@/lib/connectDB";
 import { NextAuthOptions } from 'next-auth'
+import { nanoid } from 'nanoid';
 
 const GOOGLE_ID = process.env.GOOGLE_ID!
 const GOOGLE_SECRET = process.env.GOOGLE_SECRET!
@@ -81,7 +82,7 @@ export const options : NextAuthOptions = {
                 name: name,
                 email: email,
                 image: user.image || image || picture,
-                collections: [{groupId: '00000',name: 'like',photos:[]}],
+                collections: [{groupId: nanoid(),name: 'like',photos:[]}],
                 provider: provider
               });
               if(!user.image) user.image = image || picture;

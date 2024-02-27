@@ -2,7 +2,9 @@ import User from "@/models/User";
 import { connectDB } from "@/lib/connectDB";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
+import { nanoid } from "nanoid";
 
+// 新增 group
 export async function POST(req: Request,{params}:{params: any}){
   try{
     await connectDB();
@@ -13,7 +15,7 @@ export async function POST(req: Request,{params}:{params: any}){
     
     if(userExist){
       const newItem = {
-        groupId: String(userExist.collections.length).padStart(5,'0'),
+        groupId: nanoid(),
         name: fileName,
         photos: []
       };
