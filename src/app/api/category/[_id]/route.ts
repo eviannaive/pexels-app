@@ -3,10 +3,11 @@ import { connectDB } from "@/lib/connectDB";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 
-export async function PATCH(req: Request){
+export async function POST(req: Request,{params}:{params: any}){
   try{
     await connectDB();
-    const {_id, fileName} = await req.json();
+    const { _id } = params;
+    const { fileName } = await req.json();
     const mongoId = new ObjectId(_id);
     const userExist = await User.findOne({_id: mongoId});
     

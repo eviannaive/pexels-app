@@ -3,10 +3,11 @@ import { connectDB } from "@/lib/connectDB";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 
-export async function PATCH(req: Request){
+// 移除最愛
+export async function DELETE(req: Request, { params } : {params: any}){
   try{
     await connectDB();
-    const {_id, photoData} = await req.json();
+    const {_id, groupId, imgId} = params;
     const mongoId = new ObjectId(_id);
     const updateData = await User.updateOne({
         _id: mongoId,
@@ -14,13 +15,13 @@ export async function PATCH(req: Request){
       {
         $pull: {
           'collections.$[elem].photos': {
-            imgId:photoData.imgId,
+            imgId: imgId,
           }
         }
       },
       {
         arrayFilters: [
-          {'elem.groupId': photoData.groupId}
+          {'elem.groupId': groupId}
         ]
       }
     )

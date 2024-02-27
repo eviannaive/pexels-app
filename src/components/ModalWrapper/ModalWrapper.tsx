@@ -13,11 +13,12 @@ import { faCheckToSlot,faTriangleExclamation } from "@fortawesome/free-solid-svg
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 
 export default function ModdleWrapper(){
-  let { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc,memoData, setMemoData } : any = useModalContext();
+  let { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc,memoData, setMemoData,groupIndex, setGroupIndex } : any = useModalContext();
   const router = useRouter();
   const [group, setGroup] = useState([]);
   const [selectGroup, setSelectGroup] = useState('00000')
   const { data: session, update } = useSession();
+  const _id = session?.user._id
   let [ scope, animate] = useAnimate();
   let inputRef = useRef<HTMLInputElement>(null);
 
@@ -42,8 +43,7 @@ export default function ModdleWrapper(){
     if(!data){
       return
     }
-    await axios.patch("http://localhost:3000/api/category",{
-      _id: session?.user?._id,
+    await axios.post(`http://localhost:3000/api/category/${session?.user?._id}`,{
       fileName: data
     }).then((res)=>{
       const data = res.data.collections;
@@ -61,24 +61,25 @@ export default function ModdleWrapper(){
   const sendLike = async(e) => {
     e.preventDefault();
     const data = {
-      groupId : selectGroup,
       imgId,
       imgSrc,
     }
-    await axios.patch("http://localhost:3000/api/category/like",{
-      _id: session?.user?._id,
-      photoData: data
+    console.log(data)
+    await axios.post(`http://localhost:3000/api/category/${_id}/${selectGroup}`,{
+      imgId,
+      imgSrc,
     }).then((res)=>{
       if(res.statusText === 'OK'){
         photoExist(res.data.exist)
       }else{
         console.log('error')
       }
+      update()
     })
   }
 
   const photoExist = (exist: boolean) => {
-    exist? setModalType('photoExist') : modalClose(async()=>{setModalType('checked')})
+    exist? setModalType('photoExist') : modalClose(async()=>{setModalType('checked')});
   }
 
   const defaultGroup = () => {
@@ -87,15 +88,22 @@ export default function ModdleWrapper(){
   }
 
   const changeGroupName = async() => {
-		await axios.patch("http://localhost:3000/api/category/rename",{
-      _id: session?.user?._id,
-      groupData: {
-        ...memoData
-      }
+		await axios.patch(`http://localhost:3000/api/category/${_id}/${memoData.groupId}`,{
+      newName: memoData.name
     }).then(async(res)=>{
-      console.log(res.data)
       await modalClose(async()=>{setModalType('success')})
 			update()
+    })
+  }
+
+  const deleteGroup = async() => {
+    await axios.delete(`http://localhost:3000/api/category/${_id}/${memoData.groupId}`).then(async(res)=>{
+      console.log(res.data)
+      await modalClose(async()=>{setModalType('success')})
+			update();
+      const collections = session?.user?.collections;
+      setGroup(collections);
+      setGroupIndex(groupIndex - 1)
     })
   }
 
@@ -176,7 +184,7 @@ export default function ModdleWrapper(){
               {
                 modalType === 'changeName' ? (
                   <div>
-                    <input type="aaaaaa" value={memoData.name} className="border-2 rounded-md px-2 text-default" onChange={(e)=>{setMemoData({
+                    <input type="text" value={memoData.name} className="border-2 rounded-md px-2 text-default" onChange={(e)=>{setMemoData({
                         ...memoData,
                         name:e.target.value
                       })
@@ -212,6 +220,29 @@ export default function ModdleWrapper(){
                   </div>
                 )
                 : ''
+              }
+              {
+                modalType === 'doubleCheck' ? 
+                (
+                  <div className="py-[20px]">
+                    <div className="min-h-[120px] rounded-full flex flex-col justify-center items-center m-auto">
+                      <FontAwesomeIcon icon={faTriangleExclamation} color="#cd3c56" size="4x"/>
+                      <p className="mt-[20px] w-full">There are <span className="text-rose-400">{memoData.photos.length}</span> photos</p>
+                      <p className="w-full">in 
+                      <span>『 </span>
+                      <span className="text-rose-400" style={{'wordWrap':'break-word'}}>{memoData.name}</span>
+                      <span> 』</span>
+                      </p>
+                      <p className="w-full">Are you sure to delete?</p>
+                      <div className="flex gap-3">
+                        <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={()=>{modalClose()}}>Cancel
+                        </button>
+                        <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={deleteGroup}>Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : ''
               }
             </div>
           </div>
