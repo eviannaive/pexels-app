@@ -1,10 +1,13 @@
 "use client"
 
-import { Url } from "next/dist/shared/lib/router/router";
 import { createContext, useContext, useState} from "react"
 const ModalContext = createContext({})
 
-export function ModalContextProvider({children}){
+export function ModalContextProvider({
+  children,
+}: {
+  children: React.ReactNode
+}){
   let [modalShow, setModalShow] = useState(false);
   let [modalType, setModalType] = useState('');
   let [imgId, setImgId] = useState('');

@@ -8,14 +8,14 @@ import { connectDB } from "@/lib/connectDB";
 import { NextAuthOptions } from 'next-auth'
 import { nanoid } from 'nanoid';
 
-const GOOGLE_ID = process.env.GOOGLE_ID!
-const GOOGLE_SECRET = process.env.GOOGLE_SECRET!
-const GITHUB_ID = process.env.GITHUB_ID!
-const GITHUB_SECRET = process.env.GITHUB_SECRET!
-const FACEBOOK_ID = process.env.FACEBOOK_ID!
-const FACEBOOK_SECRET = process.env.FACEBOOK_SECRET!
+const GOOGLE_ID = process.env.GOOGLE_ID
+const GOOGLE_SECRET = process.env.GOOGLE_SECRET
+const GITHUB_ID = process.env.GITHUB_ID
+const GITHUB_SECRET = process.env.GITHUB_SECRET
+const FACEBOOK_ID = process.env.FACEBOOK_ID
+const FACEBOOK_SECRET = process.env.FACEBOOK_SECRET
 
-export const options : NextAuthOptions = {
+export const options = {
   providers:  [
     CredentialsProvider({
       name: "Credentials",

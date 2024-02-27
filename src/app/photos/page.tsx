@@ -2,7 +2,7 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart,faDownload  } from "@fortawesome/free-solid-svg-icons";
-import { useMemo, useEffect, useState, useRef } from 'react';
+import { useMemo, useEffect, useState, useRef, useTransition } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
 import Pagination from '@/components/Pagination';
@@ -14,13 +14,11 @@ import { useModalContext } from "@/context/ModalContext";
 import { useSearchContext } from '@/context/searchContext';
 
 // components
-import { Loading } from '@/components/Loading';
+import { LoadingFull } from '@/components/Loading';
 import { NoResult } from '@/components/NoResult';
 import SearchBar from '@/components/SearchBar';
 import ImgBox from '@/components/ImgBox';
 import { Enlarge } from '@/components/Enlarge';
-
-
 
 const pexelsKey = process.env.NEXT_PUBLIC_PEXELS_KET;
 
@@ -38,13 +36,14 @@ export default function Photos() {
 			inputValue,
 			resultInfo, setResultInfo,
 			photosArr, setPhotosArr,
-			loading, setLoading,
+			isPending, startTransition,
 			initFetch,
 			firstSearch,
 			inputRef
 		} : any = useSearchContext()
 		
 		const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc,downloadImg} : any = useModalContext()
+		
 		
 		const perPage = 12;
 	
@@ -62,7 +61,6 @@ export default function Photos() {
 		} 
 
 		const windowResize = () => {
-			console.log('thishssssssssssss')
 			return {
 				width: window.innerWidth,
 				height: window.innerHeight
@@ -133,18 +131,20 @@ export default function Photos() {
 
 	// fetch
 	const fetchData = async ({value, url, page = 1} : {value?: string, url?: string, page?:number}) => {
-		setLoading(true)
-		const searchURL = url || `https://api.pexels.com/v1/search?query=${value}&per_page=${perPage}&page=${page}`
-		const result = await axios.get(searchURL,{
-			headers:{
-				Authorization: pexelsKey
-			}
+		// setLoading(true)
+		startTransition(async()=>{
+			const searchURL = url || `https://api.pexels.com/v1/search?query=${value}&per_page=${perPage}&page=${page}`
+			const result = await axios.get(searchURL,{
+				headers:{
+					Authorization: pexelsKey
+				}
+			})
+			console.log(result.data.photos)
+			setResultInfo(result.data)
+			setPhotosArr(result.data.photos)
+			// setLoading(false)
 		})
-		console.log(result.data.photos)
-		setResultInfo(result.data)
-		setPhotosArr(result.data.photos)
-		setLoading(false)
-		console.log(result.data)
+		// console.log(result.data)
 	}
 
 	// search
@@ -227,14 +227,16 @@ export default function Photos() {
 				<SearchBar event={searchHandler}/>
 			</div>
 			{
-				loading ? (
-					<div className='text-2xl text-center my-[80px]'>
-						<Loading />	
-					</div>
+				isPending ? (
+					<LoadingFull />
+					// <div className='text-2xl text-center my-[80px]'>
+					// 	<Loading />	
+
+					// </div>
 				) : ''
 			}
 			{
-				!loading ?
+				!isPending ?
 					(<div className='flex items-center flex-col'>
 						{	
 							searchMemo.length ? (
@@ -269,10 +271,11 @@ export default function Photos() {
 											</div> : ''
 									}
 						</div>
-							) : (
-								<div className='text-lg text-zinc-700 text-center py-[60px]'>
-									<NoResult text={searchMemo.input}/>
-								</div>
+							) : ( initFetch.current && (
+									<div className='text-lg text-zinc-700 text-center py-[60px]'>
+										<NoResult text={searchMemo.input}/>
+									</div>
+								)
 							)
 						}
 					</div>) : ''
