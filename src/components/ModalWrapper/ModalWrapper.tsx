@@ -43,7 +43,7 @@ export default function ModdleWrapper(){
     if(!data){
       return
     }
-    await axios.post(`http://localhost:3000/api/category/${session?.user?._id}`,{
+    await axios.post(`api/category/${session?.user?._id}`,{
       fileName: data
     }).then((res)=>{
       const data = res.data.collections;
@@ -65,7 +65,7 @@ export default function ModdleWrapper(){
       imgSrc,
     }
     console.log(data)
-    await axios.post(`http://localhost:3000/api/category/${_id}/${selectGroup}`,{
+    await axios.post(`api/category/${_id}/${selectGroup}`,{
       imgId,
       imgSrc,
     }).then((res)=>{
@@ -88,7 +88,7 @@ export default function ModdleWrapper(){
   }
 
   const changeGroupName = async() => {
-		await axios.patch(`http://localhost:3000/api/category/${_id}/${memoData.groupId}`,{
+		await axios.patch(`api/category/${_id}/${memoData.groupId}`,{
       newName: memoData.name
     }).then(async(res)=>{
       await modalClose(async()=>{setModalType('success')})
@@ -97,7 +97,7 @@ export default function ModdleWrapper(){
   }
 
   const deleteGroup = async() => {
-    await axios.delete(`http://localhost:3000/api/category/${_id}/${memoData.groupId}`).then(async(res)=>{
+    await axios.delete(`api/category/${_id}/${memoData.groupId}`).then(async(res)=>{
       console.log(res.data)
       await modalClose(async()=>{setModalType('success')})
 			update();
