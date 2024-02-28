@@ -3,8 +3,6 @@ import { redirect } from "next/navigation"
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from "react";
 import { LoadingFull } from "@/components/Loading";
-import { ModalContextProvider } from "@/context/ModalContext";
-import { ModalWrapper } from "@/components/ModalWrapper";
 
 export default function DashboardLayout({
   children,
@@ -24,10 +22,9 @@ export default function DashboardLayout({
     <>
       {loading && (<LoadingFull />)}
       {!loading && (
-        <ModalContextProvider>
-          <ModalWrapper/>
+        <>
           {children}
-        </ModalContextProvider>
+        </>
       )}
     </>
   )
