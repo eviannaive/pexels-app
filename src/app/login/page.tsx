@@ -1,7 +1,7 @@
 "use client"
 import { TextTitle } from '@/components/Text';
 import { ButtonLogin } from '@/components/Buttons';
-import { signIn } from 'next-auth/react';
+import { signIn, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { useState, useTransition, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -39,10 +39,13 @@ export default function Login(){
     if(!email || !password) return setError('Please enter email and password')
     startTransition(async()=>{
       try{
-        const res = await signIn("credentials", {
+        const data = {
           email, password, redirect: false, callbackUrl: defaultUrl
-        })
+        };
+        console.log(data)
+        const res = await signIn("credentials", data)
         if(res?.error){
+          console.log(res)
           setError('Invalid Email or Password');
         }else{
           router.replace('/dashboard')
@@ -74,7 +77,7 @@ export default function Login(){
     axios.post('/api/register/final',{
       name: usernameRef.current.value,
       email: signUpEmail.current.value,
-      password: usernameRef.current.value,
+      password: confirmPw.current.value,
     })
     .then((res)=>{
       console.log('送出成功')

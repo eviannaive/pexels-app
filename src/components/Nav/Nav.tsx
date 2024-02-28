@@ -11,6 +11,8 @@ import AccountDropdown from "../AccountDropdown"
 import { useState, useMemo, useEffect, useRef, useTransition, startTransition } from "react";
 import delay from "@/lib/delay";
 import Image from "next/image";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 const logItem = {
     name: 'login',
@@ -55,7 +57,16 @@ const Nav = ({list}) => {
     {!session && (<NavList listData={logItem}/>)}
     {session && (
       <button className="w-[40px] h-[40px] rounded-full overflow-hidden hover: border-2 border-rose-200 transition-all hover:border-amber-300" onClick={(e)=>{e.stopPropagation();setOpen(!open)}} disabled={isPending}>
-        <img src={session?.user.image} alt="" className="w-full h-full object-cover"/>
+        {
+          session?.user.image ? (
+            <img src={session?.user.image} alt="" className="w-full h-full object-cover"/>
+          ) : (
+            <div>
+              <FontAwesomeIcon icon={faUser} color="#fff" />
+            </div>
+
+          )
+        }
       </button>)
     }
     {

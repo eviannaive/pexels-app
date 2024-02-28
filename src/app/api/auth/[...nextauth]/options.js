@@ -35,23 +35,27 @@ export const options = {
         try {
           await connectDB();
           console.log("Credentials",credentials);
-          const foundUser = await User.findOne({email: credentials.email}).lean().exec();
+          const foundUser = await User.findOne({email: credentials.email})
+          console.log(foundUser,'fffff',credentials.password,
+          foundUser.password)
+          console.log('aaaaaaa')
           if(foundUser) {
             console.log("User Exists");
             const match = await bcrypt.compare(
               credentials.password,
-              foundUser.password
+              foundUser.password,
             )
             if(match){
               console.log("Good Pass");
-              delete foundUser.password;
               return foundUser
             }
           }
+          
           return null
 
         }catch(error){
           console.log(error)
+          return error
         }
       },
     }),
@@ -70,6 +74,7 @@ export const options = {
   ],
   callbacks: {
     async signIn({ user, account, profile }){
+      console.log('callback')
       if(account?.type === 'oauth'){
         const provider = account.provider;
         try{
@@ -95,19 +100,17 @@ export const options = {
       return true
     },
     async jwt({token, user, account}){
-      console.log("jwt callback",user)
       if(user) {
         token.provider = account?.provider;
       }
       return token;
     },
-    async session({session, token, user}){
+    async session({session, token}){
       if(session?.user){
         const userData = await User.findOne({email: session.user.email, provider: token.provider}).lean().exec();
         session.user._id= userData?._id;
         session.user.provider = userData?.provider;
         session.user.collections = userData?.collections;
-        console.log("session callback",session)
         return session;
       } 
     },

@@ -129,7 +129,7 @@ export default function Dashboard() {
 									</button>
 									<Swiper spaceBetween={10} slidesPerView='auto' onSwiper={(swiper) => swiperRef.current = swiper}>
 										{
-											session.user.collections.map((g,index)=>(
+											session?.user.collections?.map((g,index)=>(
 												<SwiperSlide style={{width: 'auto'}} key={index}>
 													<div className={`flex items-center rounded-50px border border-teal-400 transition duration-300 hover:bg-teal-500 hover:text-white cursor-pointer py-[2px] ${index===groupIndex? 'bg-teal-500 text-white' : ''} ${editMode?'px-[10px]':'px-[20px]'}`} goroup-id={g.groupId} onClick={()=>setGroupIndex(index)}>
 														<span>{g.name}</span>
@@ -159,7 +159,13 @@ export default function Dashboard() {
 						</div>
 						<div className='py-[20px] flex flex-wrap'>
 							{
-								session.user.collections[groupIndex]?.photos.map((p,index)=>(
+								!session?.user?.collections[groupIndex].photos.length ? (
+									<div className='w-full h-[300px] flex-center'>Empty</div>
+
+								): ''
+							}
+							{
+								session?.user?.collections[groupIndex]?.photos.map((p,index)=>(
 									<div className='w-1/5 p-1 max-[840px]:w-1/3 max-[500px]:w-full group hover:z-30' key={index}>
 										<div className='pb-[100%] relative cursor-pointer overflow-hidden' box-wrap="">
 											<img src={p.imgSrc} className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]' onError={()=>{imgLoadError(p.imgId)}} onClick={handleEnlarge} img-id={p.imgId}/>

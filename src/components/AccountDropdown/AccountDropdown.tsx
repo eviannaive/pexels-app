@@ -3,6 +3,8 @@ import { useSession, signOut } from 'next-auth/react';
 import { useEffect } from "react"
 import { ButtonDefault } from '../Buttons';
 import { useAnimate } from "framer-motion"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 const AccountDropdown = ({state} :{state: boolean}) => {
   const { data: session, status } = useSession();
@@ -19,7 +21,16 @@ const AccountDropdown = ({state} :{state: boolean}) => {
     <div className={`bg-white rounded-lg absolute top-[95%] right-[20px] p-[20px] shadow-lg shadow-stone-300/50 opacity-0 h-0 overflow-hidden`} ref={scope} onClick={(e)=>{e.stopPropagation()}}>
       <div className='text-sm flex flex-col text-center text-slate-700 gap-2'>
         <div className="w-[60px] h-[60px] rounded-full overflow-hidden cursor-pointer hover: border-2 border-rose-200 transition-all hover:border-amber-300 mx-auto mb-2">
-          <img src={user?.image} alt="" className="w-full h-full object-cover"/>
+          {
+            session?.user.image ? (
+              <img src={session?.user.image} alt="" className="w-full h-full object-cover"/>
+            ) : (
+              <div className='w-full h-full flex-center'>
+                <FontAwesomeIcon icon={faUser} color="#fbc9d5" size="2x" />
+              </div>
+
+            )
+          }
         </div>
         <div>
           <p>{user?.name}</p>
