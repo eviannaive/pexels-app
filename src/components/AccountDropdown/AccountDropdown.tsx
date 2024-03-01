@@ -5,26 +5,17 @@ import { ButtonDefault } from '../Buttons';
 import { useAnimate } from "framer-motion"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { useModalContext } from "@/context/ModalContext";
 
 const AccountDropdown = ({state} :{state: boolean}) => {
   const { data: session, status } = useSession();
-  const [ avatar, setAvatar] = useState('');
-  const [ awaitSave, setAwaitSave ] = useState(false);
   const user = session?.user;
   let [ scope, animate] = useAnimate();
+  const { modalShow, setModalShow, modalType, setModalType,avatarPreview, setAvatarPreview,avatar, setAvatar } : any = useModalContext()
 
-  const avatarChange = (e) => {
-    console.log(e.target.files[0])
-    const render = new FileReader();
-    render.onload = () => {
-      if(render.readyState === 2){
-        setAvatar(render.result)
-      }
-    }
-    if(e.target.files.length){
-      render.readAsDataURL(e.target.files[0])
-      setAwaitSave(true)
-    }
+  const avatarChange = () => {
+    setModalType('changeAvatar')
+    setModalShow(true);
   }
   useEffect(()=>{
     session?.user.image? setAvatar(session?.user.image) : '';
@@ -50,10 +41,9 @@ const AccountDropdown = ({state} :{state: boolean}) => {
               )
             }
             {
-              <label className='w-full h-full absolute-center group cursor-pointer'>
-                <input name="avatar" type="file" className='opacity-0' accept="image/png, image/jpeg" onChange={avatarChange}/>
+              <div className='w-full h-full absolute-center group cursor-pointer' onClick={avatarChange}>
                 <p className='text-xs absolute-center opacity-0 group-hover:opacity-100 transition duration-300'>change avatar</p>
-              </label>
+              </div>
             }
           </div>
         </div>

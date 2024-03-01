@@ -14,6 +14,8 @@ export function ModalContextProvider({
   let [imgSrc, setImgSrc] = useState('');
   let [memoData, setMemoData]= useState<any>('');
   let [groupIndex, setGroupIndex] = useState(0);
+  let [avatar, setAvatar] = useState('');
+  let [avatarPreview, setAvatarPreview] = useState<null | string>(null);
   const downloadImg = async(id : string,src :string) => {
     const imgBlob = await fetch(src).then((res)=>res.arrayBuffer()).then((buffer)=>new Blob([buffer],{type: "image/jpeg"}))
     const link = document.createElement('a');
@@ -25,7 +27,7 @@ export function ModalContextProvider({
   };
 
   return (
-    <ModalContext.Provider value={{modalShow, setModalShow,modalType, setModalType,imgId, setImgId, imgSrc, setImgSrc,downloadImg,memoData, setMemoData,groupIndex, setGroupIndex }}>
+    <ModalContext.Provider value={{modalShow, setModalShow,modalType, setModalType,imgId, setImgId, imgSrc, setImgSrc,downloadImg,memoData, setMemoData,groupIndex, setGroupIndex,avatarPreview, setAvatarPreview,avatar, setAvatar }}>
       {children}
     </ModalContext.Provider>
   )

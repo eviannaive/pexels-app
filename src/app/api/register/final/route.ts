@@ -14,6 +14,7 @@ export async function POST(req: Request){
       name: data.name,
       email: data.email,
       password: password,
+      image: '',
       collections: [{groupId: nanoid(),name: 'like',photos:[]}],
       provider: 'credentials'
     });

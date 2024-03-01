@@ -159,39 +159,46 @@ export default function Dashboard() {
 						</div>
 						<div className='py-[20px] flex flex-wrap'>
 							{
-								!session?.user?.collections[groupIndex].photos.length ? (
-									<div className='w-full h-[300px] flex-center'>Empty</div>
-
+								session?.user?.collections ? (
+									<>
+									{
+										!session?.user?.collections[groupIndex].photos.length ? (
+											<div className='w-full h-[300px] flex-center'>Empty</div>
+		
+										): ''
+									}
+									{
+										session?.user?.collections[groupIndex]?.photos.map((p,index)=>(
+											<div className='w-1/5 p-1 max-[840px]:w-1/3 max-[500px]:w-full group hover:z-30' key={index}>
+												<div className='pb-[100%] relative cursor-pointer overflow-hidden' box-wrap="">
+													<img src={p.imgSrc} className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]' onError={()=>{imgLoadError(p.imgId)}} onClick={handleEnlarge} img-id={p.imgId}/>
+													{
+														editMode && (
+														<div className='absolute top-[15px] right-[15px] transition group-hover:opacity-100'>
+															<div className='opacity-100 transition-all w-[30px] h-[30px] flex-center bg-rose-400 rounded-full hover:bg-rose-600' onClick={deletePhoto}>
+																<FontAwesomeIcon icon={faTrash} size="sm" color="#f9f9f9"/>
+															</div>
+														</div>
+														)
+													}
+													{
+														!editMode && (
+															<div className='absolute bottom-[15px] right-[15px] opacity-0 transition group-hover:opacity-100'>
+																<div className='opacity-75 hover:opacity-100 transition-all' onClick={handleDownload}>
+																	<FontAwesomeIcon icon={faDownload} size="lg" color="#f9f9f9"/>
+																</div>
+															</div>
+														)
+													}
+													<div className='absolute-center w-[101%] h-[101%] border-4 border-orange-300 opacity-0 group-hover:opacity-100 pointer-events-none transition duration-300 z-10'></div>
+												</div>
+											</div>
+										))
+									}
+									</>
 								): ''
 							}
-							{
-								session?.user?.collections[groupIndex]?.photos.map((p,index)=>(
-									<div className='w-1/5 p-1 max-[840px]:w-1/3 max-[500px]:w-full group hover:z-30' key={index}>
-										<div className='pb-[100%] relative cursor-pointer overflow-hidden' box-wrap="">
-											<img src={p.imgSrc} className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]' onError={()=>{imgLoadError(p.imgId)}} onClick={handleEnlarge} img-id={p.imgId}/>
-											{
-												editMode && (
-												<div className='absolute top-[15px] right-[15px] transition group-hover:opacity-100'>
-													<div className='opacity-100 transition-all w-[30px] h-[30px] flex-center bg-rose-400 rounded-full hover:bg-rose-600' onClick={deletePhoto}>
-														<FontAwesomeIcon icon={faTrash} size="sm" color="#f9f9f9"/>
-													</div>
-												</div>
-												)
-											}
-											{
-												!editMode && (
-													<div className='absolute bottom-[15px] right-[15px] opacity-0 transition group-hover:opacity-100'>
-														<div className='opacity-75 hover:opacity-100 transition-all' onClick={handleDownload}>
-															<FontAwesomeIcon icon={faDownload} size="lg" color="#f9f9f9"/>
-														</div>
-													</div>
-												)
-											}
-											<div className='absolute-center w-[101%] h-[101%] border-4 border-orange-300 opacity-0 group-hover:opacity-100 pointer-events-none transition duration-300 z-10'></div>
-										</div>
-									</div>
-								))
-							}
+							
 
 						</div>
 					</div>

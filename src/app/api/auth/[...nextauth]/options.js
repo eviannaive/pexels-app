@@ -36,9 +36,6 @@ export const options = {
           await connectDB();
           console.log("Credentials",credentials);
           const foundUser = await User.findOne({email: credentials.email})
-          console.log(foundUser,'fffff',credentials.password,
-          foundUser.password)
-          console.log('aaaaaaa')
           if(foundUser) {
             console.log("User Exists");
             const match = await bcrypt.compare(

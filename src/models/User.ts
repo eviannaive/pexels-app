@@ -17,10 +17,12 @@ const UserSchema = new Schema({
       type: String,
     },
     collections: {
-      type: "array"
+      type: "array",
+      required: true
     },
     provider: {
       type: String,
+      required: true
     }
   },
   {

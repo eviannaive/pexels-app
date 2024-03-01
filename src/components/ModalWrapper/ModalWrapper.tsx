@@ -9,18 +9,19 @@ import { ButtonDefault } from "../Buttons";
 import { useSession } from 'next-auth/react';
 import axios from "axios";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckToSlot,faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { faCheckToSlot,faTriangleExclamation,faUser } from "@fortawesome/free-solid-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 
 export default function ModdleWrapper(){
-  let { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc,memoData, setMemoData,groupIndex, setGroupIndex } : any = useModalContext();
+  let { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc,memoData, setMemoData,groupIndex, setGroupIndex,avatarPreview, setAvatarPreview,avatar, setAvatar } : any = useModalContext();
   const router = useRouter();
   const [group, setGroup] = useState([]);
-  const [selectGroup, setSelectGroup] = useState('00000')
+  const [selectGroup, setSelectGroup] = useState('')
   const { data: session, update } = useSession();
   const _id = session?.user._id
   let [ scope, animate] = useAnimate();
   let inputRef = useRef<HTMLInputElement>(null);
+  let imgRef = useRef<HTMLInputElement>(null);
 
   const modalClose = async(callback ?: ()=>void) => {
     if(modalShow){
@@ -107,8 +108,31 @@ export default function ModdleWrapper(){
     })
   }
 
+  const handleChangeAvatar = (e) => {
+    const render = new FileReader();
+    render.onload = () => {
+      if(render.readyState === 2){
+        setAvatarPreview(render.result)
+      }
+    }
+    if(e.target.files.length){
+      render.readAsDataURL(e.target.files[0])
+    }
+  }
+
+  const saveAvatar = async() => {
+      await axios.patch(`api/profile/${_id}`,{
+        image: avatarPreview
+      }).then(async(res)=>{
+        await modalClose(async()=>{setModalType('success');setAvatar(avatarPreview)})
+        update()
+      })
+  }
+
   useEffect(()=>{
     console.log(group,'group')
+    avatarPreview ?? setAvatarPreview(session?.user.image)
+    selectGroup ?? setSelectGroup(session?.user.collections[0]?.groupId)
     if(modalShow){
       !group?.length? setGroup(session?.user?.collections) : '';
       defaultGroup();
@@ -238,6 +262,37 @@ export default function ModdleWrapper(){
                         <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={()=>{modalClose()}}>Cancel
                         </button>
                         <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={deleteGroup}>Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : ''
+              }
+              {
+                modalType === 'changeAvatar' ? 
+                (
+                  <div className="py-[20px]">
+                    <div className="min-h-[120px] rounded-full flex flex-col justify-center items-center m-auto">
+                      <div className="w-[120px] h-[120px] rounded-full overflow-hidden hover: border-2 border-rose-200 mx-auto mb-2">
+                        {
+                          avatarPreview ? (
+                            <img src={avatarPreview} alt="" className="w-full h-full object-cover" ref={imgRef}/>
+                          ) : (
+                            <div className='w-full h-full flex-center'>
+                              <FontAwesomeIcon icon={faUser} color="#fbc9d5" size="3x" />
+                            </div>
+            
+                          )
+                        }
+                      </div>
+                      <label className="border border-emerald-400 rounded-50px relative mt-[10px] cursor-pointer transition duration-300 group hover:bg-emerald-400">
+                        <input name="avatar" type="file" className='opacity-0 w-0 absolute-center' accept="image/png, image/jpeg" onChange={handleChangeAvatar}/>
+                        <p className="text-sm px-5 py-1 group-hover:text-white transition-all duration-300" >choose file</p>
+                      </label>
+                      <div className="flex w-full gap-3 mt-[40px]">
+                        <button className="inline-block bg-orange-600/70 text-white w-1/2  rounded-50px py-[5px]" onClick={()=>{modalClose()}}>Cancel
+                        </button>
+                        <button className="inline-block bg-orange-600/70 text-white w-1/2 rounded-50px py-[5px]" onClick={saveAvatar}>Save
                         </button>
                       </div>
                     </div>
