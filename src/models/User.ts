@@ -14,7 +14,10 @@ const UserSchema = new Schema({
       type: String,
     },
     image: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
+    },
+    imgData: {
+      type: mongoose.Schema.Types.Mixed,
     },
     collections: {
       type: "array",

@@ -6,19 +6,21 @@ import { useAnimate } from "framer-motion"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { useModalContext } from "@/context/ModalContext";
+import axios from 'axios';
 
 const AccountDropdown = ({state} :{state: boolean}) => {
   const { data: session, status } = useSession();
   const user = session?.user;
   let [ scope, animate] = useAnimate();
-  const { modalShow, setModalShow, modalType, setModalType,avatarPreview, setAvatarPreview,avatar, setAvatar } : any = useModalContext()
+  const { modalShow, setModalShow, modalType, setModalType,avatar } : any = useModalContext()
 
   const avatarChange = () => {
     setModalType('changeAvatar')
     setModalShow(true);
   }
+
   useEffect(()=>{
-    session?.user.image? setAvatar(session?.user.image) : '';
+    console.log(status)
     if(state){
       animate([[scope.current, { opacity: 1, height: '230px' }]])
     }else{

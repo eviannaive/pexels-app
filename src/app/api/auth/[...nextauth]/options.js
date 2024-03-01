@@ -108,6 +108,7 @@ export const options = {
         session.user._id= userData?._id;
         session.user.provider = userData?.provider;
         session.user.collections = userData?.collections;
+        console.log(session)
         return session;
       } 
     },

@@ -1,18 +1,18 @@
 "use client"
 
 import { NavList } from "."
-// import { getServerSession } from "next-auth"
-// import { options } from '@/app/api/auth/[...nextauth]/options'
 import { useSession, signOut } from 'next-auth/react';
 import Link from "next/link"
 import { ButtonLogin } from "../Buttons"
-// import AuthProvider from "@/context/AuthProvider"
 import AccountDropdown from "../AccountDropdown"
 import { useState, useMemo, useEffect, useRef, useTransition, startTransition } from "react";
 import delay from "@/lib/delay";
 import Image from "next/image";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { useModalContext } from "@/context/ModalContext";
+import axios from "axios";
+import fetchUserData from "@/lib/fetchUserData";
 
 const logItem = {
     name: 'login',
@@ -20,11 +20,12 @@ const logItem = {
     icon: 'faRightToBracket'
   };
 
-const Nav = ({list}) => {
-  const { data: session, status } = useSession();
+export default function Nav({list}){
+  const { data: session, status, update } = useSession();
   const [ open, setOpen ] = useState(false);
   const [ dropdown, setDropdown ] = useState(false);
   const [ isPending, startTransition ] = useTransition();
+  let { avatar, setAvatar, fetchUser, setFetchUser } : any = useModalContext();
 
   const dropdownHandle = () => {
     startTransition(async()=>{
@@ -35,17 +36,30 @@ const Nav = ({list}) => {
         setDropdown(false)
       }
     })
-
   }
+
+  const getUserData = async()=>{
+    const id = session?.user._id;
+    if(id){
+      const userData = await fetchUserData(id,(res)=>{setFetchUser(res.data.user)});
+      console.log(userData,'second-------------')
+      userData?.imgData? setAvatar(userData.imgData): setAvatar(session?.user.image);
+    }
+  }
+
   useEffect(()=>{
     dropdownHandle()
   },[open])
 
   useEffect(()=>{
+    getUserData();
+  },[status, avatar])
+  
+  useEffect(()=>{
     window.addEventListener('click', ()=>{
       setOpen(false)
     })
-  },[])
+  },[status])
 
 
   return (
@@ -58,8 +72,8 @@ const Nav = ({list}) => {
     {session && (
       <button className="w-[40px] h-[40px] rounded-full overflow-hidden hover: border-2 border-rose-200 transition-all hover:border-amber-300" onClick={(e)=>{e.stopPropagation();setOpen(!open)}} disabled={isPending}>
         {
-          session?.user.image ? (
-            <img src={session?.user.image} alt="" className="w-full h-full object-cover"/>
+          avatar? (
+            <img src={avatar} alt="" className="w-full h-full object-cover"/>
           ) : (
             <div>
               <FontAwesomeIcon icon={faUser} color="#fff" />
@@ -77,5 +91,3 @@ const Nav = ({list}) => {
   </nav>
   )
 }
-
-export default Nav

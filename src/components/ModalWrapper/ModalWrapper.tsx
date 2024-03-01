@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckToSlot,faTriangleExclamation,faUser } from "@fortawesome/free-solid-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 
+
 export default function ModdleWrapper(){
   let { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc,memoData, setMemoData,groupIndex, setGroupIndex,avatarPreview, setAvatarPreview,avatar, setAvatar } : any = useModalContext();
   const router = useRouter();
@@ -116,22 +117,28 @@ export default function ModdleWrapper(){
       }
     }
     if(e.target.files.length){
-      render.readAsDataURL(e.target.files[0])
+      setAvatarPreview(render.readAsDataURL(e.target.files[0]))
     }
   }
 
   const saveAvatar = async() => {
-      await axios.patch(`api/profile/${_id}`,{
-        image: avatarPreview
-      }).then(async(res)=>{
-        await modalClose(async()=>{setModalType('success');setAvatar(avatarPreview)})
-        update()
-      })
+    if(avatar === avatarPreview) {
+      await modalClose(async()=>{setModalType('success')})
+      return;
+    }
+    await axios.patch(`api/profile/${_id}`,{
+      image: '',
+      imgData: avatarPreview 
+    }).then(async(res)=>{
+      await modalClose(async()=>{setModalType('success');
+      setAvatar(avatarPreview)})
+      update()
+    })
   }
 
   useEffect(()=>{
-    console.log(group,'group')
-    avatarPreview ?? setAvatarPreview(session?.user.image)
+    console.log(group,avatar,avatarPreview,'groupxxxxxx')
+    !!avatarPreview ? '' :setAvatarPreview(avatar);
     selectGroup ?? setSelectGroup(session?.user.collections[0]?.groupId)
     if(modalShow){
       !group?.length? setGroup(session?.user?.collections) : '';
