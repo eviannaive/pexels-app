@@ -25,7 +25,7 @@ const initPhoto = async () => {
 
 export default function Home() {
   const initOnce = useRef(false)
-  const [ data, setData ] = useState<any[]>([])
+  const [ data, setData ] = useState<{[key:string]: any}[]>([])
   const setMarqueeData = async() => {
     const dataArr = await Promise.all(Array(2).fill(null).map(d=>initPhoto()));
     setData(dataArr)
@@ -39,7 +39,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col w-full min-h-custom">
-      <MarqueeWrapper data={data}/>
+      <MarqueeWrapper marqueeData={data}/>
       <div className='flex flex-col grow justify-center items-center my-[50px]'>
         <TextTitle text="Collect your favorite pictures." delay={1} />
         <ButtonExplore text="FIND MORE" delay={1.5} target="/photos" />

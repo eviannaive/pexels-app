@@ -21,12 +21,12 @@ declare module "next-auth" {
   }
 }
 
-const GOOGLE_ID = process.env.GOOGLE_ID
-const GOOGLE_SECRET = process.env.GOOGLE_SECRET
-const GITHUB_ID = process.env.GITHUB_ID
-const GITHUB_SECRET = process.env.GITHUB_SECRET
-const FACEBOOK_ID = process.env.FACEBOOK_ID
-const FACEBOOK_SECRET = process.env.FACEBOOK_SECRET
+const GOOGLE_ID = process.env.GOOGLE_ID!
+const GOOGLE_SECRET = process.env.GOOGLE_SECRET!
+const GITHUB_ID = process.env.GITHUB_ID!
+const GITHUB_SECRET = process.env.GITHUB_SECRET!
+const FACEBOOK_ID = process.env.FACEBOOK_ID!
+const FACEBOOK_SECRET = process.env.FACEBOOK_SECRET!
 
 export const authOptions : AuthOptions = {
   providers:  [
@@ -87,7 +87,7 @@ export const authOptions : AuthOptions = {
         const provider = account.provider;
         try{
             await connectDB();
-            const {name, email, image, picture} = profile;
+            const {name, email, image, picture } : any = profile;
             const foundUser = await User.findOne({email: email, provider: provider}).lean().exec();
             if(!foundUser){
               console.log('this is false')

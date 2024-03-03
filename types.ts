@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import * as icons from "@fortawesome/free-solid-svg-icons";
 
 export type Photos = {
   imgId: string,
@@ -22,3 +23,9 @@ export interface User {
   updateAt: Date,
   __v: number
 }
+
+export type NavData = {
+  name: string;
+  link: string;
+  icon: keyof typeof icons;
+};

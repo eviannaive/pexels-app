@@ -2,14 +2,9 @@ import Link from "next/link";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import * as icons from "@fortawesome/free-solid-svg-icons";
+import { NavData } from "../../../types";
 
-type ListData = {
-  name: string;
-  link: string;
-  icon: keyof typeof icons;
-};
-
-export default function NavList({listData} : {listData : ListData}){
+export default function NavList({listData} : {listData : NavData}){
   return (
       <Link href={listData.link} className="flex items-center text-slate-200 font-medium group transition-all">
         <span className="opacity-90 group-hover:opacity-100 max-[600px]:hidden">

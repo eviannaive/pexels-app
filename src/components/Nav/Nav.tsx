@@ -11,16 +11,16 @@ import Image from "next/image";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { useModalContext } from "@/context/ModalContext";
-import axios from "axios";
 import fetchUserData from "@/lib/fetchUserData";
+import { NavData } from "../../../types";
 
-const logItem = {
+const logItem : NavData = {
     name: 'login',
     link: '/login',
     icon: 'faRightToBracket'
   };
 
-export default function Nav({list}:{list: {name: string,link: string, icon: string}[]}){
+export default function Nav({list}:{list: NavData[]}){
   const { data: session, status, update } = useSession();
   const [ open, setOpen ] = useState(false);
   const [ dropdown, setDropdown ] = useState(false);
@@ -39,11 +39,10 @@ export default function Nav({list}:{list: {name: string,link: string, icon: stri
   }
 
   const getUserData = async()=>{
-    const id = session?.user._id;
+    const id = session?.user?._id.toString();
     if(id){
       const userData = await fetchUserData(id,(res)=>{setFetchUser(res.data.user)});
-      console.log(userData,'second-------------')
-      userData?.imgData? setAvatar(userData.imgData): setAvatar(session?.user.image);
+      userData && userData['imgData'] ? setAvatar(userData['imgData']): setAvatar(session?.user?.image);
     }
   }
 

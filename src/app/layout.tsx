@@ -6,9 +6,10 @@ import { Nav } from '@/components/Nav'
 import AuthProvider from "@/context/AuthProvider"
 import { ModalContextProvider } from "@/context/ModalContext"
 import { ModalWrapper } from "@/components/ModalWrapper";
+import { NavData } from '../../types';
 
 const inter = Inter({ subsets: ['latin'] })
-const navData = [
+const navData : NavData[] = [
   {
     name: 'Photos',
     link: '/photos',

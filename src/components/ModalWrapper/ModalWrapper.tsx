@@ -11,18 +11,19 @@ import axios from "axios";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckToSlot,faTriangleExclamation,faUser } from "@fortawesome/free-solid-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
+import { Collections } from "../../../types";
 
 
 export default function ModdleWrapper(){
   let { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc,memoData, setMemoData,groupIndex, setGroupIndex,avatarPreview, setAvatarPreview,avatar, setAvatar } : any = useModalContext();
   const router = useRouter();
-  const [group, setGroup] = useState([]);
+  const [group, setGroup] = useState<Collections[] | undefined>([]);
   const [selectGroup, setSelectGroup] = useState('')
   const { data: session, update } = useSession();
-  const _id = session?.user._id
+  const _id = session?.user?._id
   let [ scope, animate] = useAnimate();
   let inputRef = useRef<HTMLInputElement>(null);
-  let imgRef = useRef<HTMLInputElement>(null);
+  let imgRef = useRef<HTMLImageElement>(null);
 
   const modalClose = async(callback ?: ()=>void) => {
     if(modalShow){
@@ -50,23 +51,22 @@ export default function ModdleWrapper(){
     }).then((res)=>{
       const data = res.data.collections;
       setGroup(data);
-      inputRef.current.value = ''
+      inputRef.current!.value = ''
     }).catch((err)=>{
       console.log(err)
     })
   }
 
-  const onLabelChange = (e) => {
-    setSelectGroup(e.target.value)
+  const onLabelChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+    setSelectGroup((e.target as HTMLInputElement)?.value)
   }
 
-  const sendLike = async(e) => {
+  const sendLike = async(e : React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = {
       imgId,
       imgSrc,
     }
-    console.log(data)
     await axios.post(`api/category/${_id}/${selectGroup}`,{
       imgId,
       imgSrc,
@@ -100,7 +100,6 @@ export default function ModdleWrapper(){
 
   const deleteGroup = async() => {
     await axios.delete(`api/category/${_id}/${memoData.groupId}`).then(async(res)=>{
-      console.log(res.data)
       await modalClose(async()=>{setModalType('success')})
 			update();
       const collections = session?.user?.collections;
@@ -109,15 +108,16 @@ export default function ModdleWrapper(){
     })
   }
 
-  const handleChangeAvatar = (e) => {
+  const handleChangeAvatar = (e : React.ChangeEvent<HTMLInputElement>) => {
     const render = new FileReader();
+    const files = (e.target as HTMLInputElement)?.files;
     render.onload = () => {
       if(render.readyState === 2){
         setAvatarPreview(render.result)
       }
     }
-    if(e.target.files.length){
-      setAvatarPreview(render.readAsDataURL(e.target.files[0]))
+    if(files?.length){
+      setAvatarPreview(render.readAsDataURL((files[0])))
     }
   }
 
@@ -138,7 +138,7 @@ export default function ModdleWrapper(){
 
   useEffect(()=>{
     !!avatarPreview ? '' :setAvatarPreview(avatar);
-    selectGroup ?? setSelectGroup(session?.user.collections[0]?.groupId)
+    selectGroup ?? setSelectGroup(session?.user?.collections[0]?.groupId as string)
     if(modalShow){
       !group?.length? setGroup(session?.user?.collections) : '';
       defaultGroup();
@@ -179,7 +179,7 @@ export default function ModdleWrapper(){
                     <form onSubmit={sendLike}>
                       <div className="text-sm mt-[20px] h-[160px] overflow-y-scroll">
                         {
-                          group.slice().reverse().map((file,index)=>(
+                          group?.slice().reverse().map((file,index)=>(
                             <label className="flex w-full border rounded-50px py-2 px-4 cursor-pointer hover:border-lime-600 mt-[10px]" key={index}>
                               <input type="radio" name="group" value={file.groupId} onChange={onLabelChange} checked={file.groupId === selectGroup}/>
                               <p className="ml-[10px]">{file.name}</p>

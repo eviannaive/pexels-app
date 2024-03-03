@@ -22,7 +22,7 @@ const AccountDropdown = ({state} :{state: boolean}) => {
   useEffect(()=>{
     console.log(status)
     if(state){
-      animate([[scope.current, { opacity: 1, height: '230px' }]])
+      animate([[scope.current, { opacity: 1, height: '200px' }]])
     }else{
       animate([[scope.current, { opacity: 0, height: '0'}]])
     }
