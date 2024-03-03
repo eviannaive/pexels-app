@@ -19,16 +19,6 @@ const navData = [
     link: '/dashboard',
     icon: 'faImages'
   },
-  // {
-  //   name: 'LOG IN',
-  //   link: '/login',
-  //   icon: 'faRightToBracket'
-  // },
-  // {
-  //   name: 'SIGN UP',
-  //   link: '/sign',
-  //   icon: 'faUserPlus'
-  // },
 ]
 export const metadata: Metadata = {
   title: 'My Pexels Collection',

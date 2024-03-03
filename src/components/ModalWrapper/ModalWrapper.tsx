@@ -137,7 +137,6 @@ export default function ModdleWrapper(){
   }
 
   useEffect(()=>{
-    console.log(group,avatar,avatarPreview,'groupxxxxxx')
     !!avatarPreview ? '' :setAvatarPreview(avatar);
     selectGroup ?? setSelectGroup(session?.user.collections[0]?.groupId)
     if(modalShow){
@@ -152,7 +151,11 @@ export default function ModdleWrapper(){
         modalShow && (
           <div className={`fixed w-full h-full top-0 left-0 z-[1000] flex bg-slate-600/70 opacity-0 justify-center items-center p-[30px] duration-300`} ref={scope} modal-type={modalType}>
             <div className="w-full max-w-80 bg-white rounded-2xl p-[30px] text-lg relative text-default text-center scale-0 duration-300" id="modalBox">
-              <button className="bg-stone-700 text-white rounded-full absolute w-[40px] h-[40px] top-[-10px] right-[-10px] flex-center" onClick={()=>{modalClose()}}>✕</button>
+              {
+                modalType != 'changeAvatar'?(
+                  <button className="bg-stone-700 text-white rounded-full absolute w-[40px] h-[40px] top-[-10px] right-[-10px] flex-center" onClick={()=>{modalClose()}}>✕</button>
+                ) : ''
+              }
               {
                 modalType == 'login' ? (
                   <div>
@@ -297,7 +300,7 @@ export default function ModdleWrapper(){
                         <p className="text-sm px-5 py-1 group-hover:text-white transition-all duration-300" >choose file</p>
                       </label>
                       <div className="flex w-full gap-3 mt-[40px]">
-                        <button className="inline-block bg-orange-600/70 text-white w-1/2  rounded-50px py-[5px]" onClick={()=>{modalClose()}}>Cancel
+                        <button className="inline-block bg-orange-600/70 text-white w-1/2  rounded-50px py-[5px]" onClick={()=>{modalClose();setAvatarPreview(avatar)}}>Cancel
                         </button>
                         <button className="inline-block bg-orange-600/70 text-white w-1/2 rounded-50px py-[5px]" onClick={saveAvatar}>Save
                         </button>

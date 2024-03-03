@@ -20,7 +20,7 @@ const logItem = {
     icon: 'faRightToBracket'
   };
 
-export default function Nav({list}){
+export default function Nav({list}:{list: {name: string,link: string, icon: keyof typeof faUser}[]}){
   const { data: session, status, update } = useSession();
   const [ open, setOpen ] = useState(false);
   const [ dropdown, setDropdown ] = useState(false);
@@ -65,7 +65,7 @@ export default function Nav({list}){
   return (
   <nav className='fixed top-0 left-0 w-full flex justify-end text-lg gap-x-5 px-5 py-2 bg-gradient-to-r from-sky-300 to-teal-700 z-[99] h-[var(--navHeight)] max-[600px]:gap-x-3'>
     <Link href="/" className="mr-auto flex-center">
-      <Image width="40" height="40" src="/logo.png"></Image>
+      <Image width="40" height="40" src="/logo.png" alt="pexels app"></Image>
     </Link>
     {list.map((li,index)=><NavList key={index} listData={li}/>)}
     {!session && (<NavList listData={logItem}/>)}
