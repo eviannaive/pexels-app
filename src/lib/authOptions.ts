@@ -5,8 +5,20 @@ import FacebookProvider from "next-auth/providers/facebook";
 import User from '@/models/User'
 import bcrypt from 'bcrypt'
 import { connectDB } from "@/lib/connectDB";
-import { NextAuthOptions } from 'next-auth'
+import { AuthOptions } from 'next-auth';
 import { nanoid } from 'nanoid';
+import { ObjectId } from "mongodb";
+import { Collections } from '../../types';
+
+declare module "next-auth" {
+  interface Session {
+    user?: {
+      _id: ObjectId,
+      provider: string,
+      collections: Collections[]
+    }
+  }
+}
 
 const GOOGLE_ID = process.env.GOOGLE_ID
 const GOOGLE_SECRET = process.env.GOOGLE_SECRET
@@ -15,7 +27,7 @@ const GITHUB_SECRET = process.env.GITHUB_SECRET
 const FACEBOOK_ID = process.env.FACEBOOK_ID
 const FACEBOOK_SECRET = process.env.FACEBOOK_SECRET
 
-export const options = {
+export const authOptions : AuthOptions = {
   providers:  [
     CredentialsProvider({
       name: "Credentials",
@@ -35,11 +47,11 @@ export const options = {
         try {
           await connectDB();
           console.log("Credentials",credentials);
-          const foundUser = await User.findOne({email: credentials.email})
+          const foundUser = await User.findOne({email: credentials?.email})
           if(foundUser) {
             console.log("User Exists");
             const match = await bcrypt.compare(
-              credentials.password,
+              credentials?.password as string,
               foundUser.password,
             )
             if(match){
@@ -47,9 +59,7 @@ export const options = {
               return foundUser
             }
           }
-          
           return null
-
         }catch(error){
           console.log(error)
           return error

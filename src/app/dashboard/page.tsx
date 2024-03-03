@@ -15,7 +15,7 @@ import { LoadingFull } from '@/components/Loading';
 	
 export default function Dashboard() {
 	const { data: session, status, update } = useSession();
-	const _id = session ? session?.user?._id  : null;
+	const _id = session?.user?._id;
 	const swiperRef = useRef();
 	const [ enlargeShow, setEnlargeShow ] = useState(false);
 	const [ editMode, setEditMode ] = useState(false);
@@ -27,7 +27,7 @@ export default function Dashboard() {
 	// 	newName: ''
 	// })
 	const { modalShow, setModalShow, modalType, setModalType,imgId, setImgId, imgSrc, setImgSrc, downloadImg,memoData, setMemoData,groupIndex, setGroupIndex } : any = useModalContext()
-	const imgLoadError = (id) => {
+	const imgLoadError = (id : string) => {
 		imgValidateError(id,(res)=>{
 			console.log(res)
 
