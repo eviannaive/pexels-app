@@ -13,7 +13,6 @@ export async function POST(req: Request, { params } : {params: {
     const {_id, groupId} = params;
     const { imgId, imgSrc } = await req.json();
     const mongoId = new ObjectId(_id);
-    console.log(imgId,imgSrc)
     if(!imgId || !imgSrc){
       return NextResponse.json({message: "fail"}, {status: 500})
     }

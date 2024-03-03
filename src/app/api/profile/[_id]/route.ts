@@ -30,7 +30,6 @@ export async function PATCH(req: Request, { params } : {params: any}){
     await connectDB();
     const { _id} = params;
     const data = await req.json();
-    console.log(data,'dddddddd')
     const mongoId = new ObjectId(_id);
     const findUser = await User.findOne({
         _id: mongoId,

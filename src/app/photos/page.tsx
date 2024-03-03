@@ -93,9 +93,6 @@ export default function Photos() {
 	const router = useRouter();
 	class SearchPropControl {
 		params = new URLSearchParams(searchParams)
-		constructor(){
-			console.log('new SearchPropControl')
-		}
 		setProp({value, page} : {value?: string, page?: number}){
 			value && this.params.set('query',value);
 			page && page > 1 ? this.params.set('page',String(page)) : this.params.delete('page');
@@ -139,12 +136,9 @@ export default function Photos() {
 					Authorization: pexelsKey
 				}
 			})
-			console.log(result.data.photos)
 			setResultInfo(result.data)
 			setPhotosArr(result.data.photos)
-			// setLoading(false)
 		})
-		// console.log(result.data)
 	}
 
 	// search
@@ -171,7 +165,6 @@ export default function Photos() {
 		};
 
 		window.addEventListener('resize',()=>{
-			console.log('resize')
 			setWinSize(windowResize());
 			findBreakpoints()
 		})
@@ -179,24 +172,18 @@ export default function Photos() {
 		return ()=>{setWinSize(windowResize());findBreakpoints()}
 	},[]) 
 
-	useEffect(()=>{
-		console.log('gridcolllllll')
-
-	},[gridCol])
+	// useEffect(()=>{
+	// },[gridCol])
 
 
 	// pagination event
 	class PaginationControl {
-		constructor(){
-			console.log('new PaginationControl')
-		}
 		setPageProp(pageNum: number){
 			urlMemo.setProp({page: pageNum})
 		}
 		async prev(){
 			if(!resultInfo.prev_page) return
 			await fetchData({url:resultInfo.prev_page})
-			console.log(resultInfo.page - 1)
 			this.setPageProp(resultInfo.page - 1)
 		}
 		async next(){

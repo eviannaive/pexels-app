@@ -14,8 +14,8 @@ export async function POST(req: Request){
       return NextResponse.json({message: "This email has been registered."},{status: 403})
     else
       return NextResponse.json({status:200})
-  }catch(e){
-    console.log(e)
+  }catch(err){
+    console.log(err)
     return NextResponse.json({message: "please try again"},{status: 500})
   }
 }

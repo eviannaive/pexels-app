@@ -27,12 +27,10 @@ export default function Dashboard() {
 	const imgLoadError = (id : string) => {
 		imgValidateError(id,(res)=>{
 			console.log(res)
-
 		})
 	}
 
 	const handleEnlarge = (e : React.MouseEvent<HTMLImageElement>) => {
-		console.log(e.target,String((e.target as HTMLElement)?.getAttribute('img-id')))
 		setImgId(String((e.target as HTMLElement)?.getAttribute('img-id')))
 		setImgSrc(String((e.target as HTMLElement)?.getAttribute('src')))
 		setEnlargeShow(true)
@@ -56,7 +54,6 @@ export default function Dashboard() {
 			const $el = (e.target as HTMLElement)?.closest('[box-wrap]')?.firstChild 
 			const img = String(($el as HTMLElement).getAttribute('img-id'))
 			await axios.delete(`http://localhost:3000/api/category/${_id}/${group}/${img}`).then((res)=>{
-				console.log(res.data)
 				update()
 			})
 		})
@@ -87,9 +84,9 @@ export default function Dashboard() {
 		})
 	},[])
 
-	useEffect(()=>{
-		console.log(groupIndex,'groupIndex')
-	},[groupIndex])
+	// useEffect(()=>{
+
+	// },[groupIndex])
 
 	return (
 		<div className='py-[60px] px-[20px] relative'>

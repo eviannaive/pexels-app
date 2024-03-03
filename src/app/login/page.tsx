@@ -42,7 +42,6 @@ export default function Login(){
         const data = {
           email, password, redirect: false, callbackUrl: defaultUrl
         };
-        console.log(data)
         const res = await signIn("credentials", data)
         if(res?.error){
           console.log(res)
@@ -52,7 +51,7 @@ export default function Login(){
           router.refresh()
         }
       }catch(error){
-        console.log('error')
+        console.log(error)
       }
     })
   }
@@ -64,7 +63,7 @@ export default function Login(){
       setRegisterStep(true)
     })
     .catch((err)=>{
-      console.log(err,'message')
+      console.log(err)
       setError(err?.response.data.message)
     })
   }
@@ -80,12 +79,11 @@ export default function Login(){
       password: confirmPw.current?.value,
     })
     .then((res)=>{
-      console.log('送出成功')
       // 用router不能刷新
       window.location.reload();
     })
     .catch((err)=>{
-      console.log(err,'message')
+      console.log(err)
     })
   }
   return (

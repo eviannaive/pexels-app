@@ -16,7 +16,6 @@ export default function MarqueeWrapper({marqueeData} : {marqueeData : {[key:stri
     setImgId(String((e.target as HTMLElement)?.getAttribute('img-id')))
     setImgSrc(String((e.target as HTMLElement)?.getAttribute('src')))
   }
-  console.log(marqueeData)
   return (
     <>
       {

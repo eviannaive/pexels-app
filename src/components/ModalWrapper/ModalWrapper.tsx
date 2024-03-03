@@ -27,7 +27,6 @@ export default function ModdleWrapper(){
 
   const modalClose = async(callback ?: ()=>void) => {
     if(modalShow){
-      console.log(callback,'callback')
       callback?.();
       callback? await delay(500) : ''
       await animate([['#modalBox',{ scale: 0}],[scope.current, { opacity: 0 }]])
@@ -73,8 +72,6 @@ export default function ModdleWrapper(){
     }).then((res)=>{
       if(res.statusText === 'OK'){
         photoExist(res.data.exist)
-      }else{
-        console.log('error')
       }
       update()
     })
