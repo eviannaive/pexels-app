@@ -12,12 +12,13 @@ export type Collections = {
   photos: Photos
 }
 
-export interface User {
+export interface TypeUser {
   _id: ObjectId,
   name: string,
   email: string,
-  image: string | undefined,
-  collections: Collections,
+  image: string,
+  imgData?: string | null,
+  collections: Collections[],
   provider: string,
   createAt: Date,
   updateAt: Date,

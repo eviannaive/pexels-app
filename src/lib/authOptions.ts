@@ -10,6 +10,7 @@ import { nanoid } from 'nanoid';
 import { ObjectId } from "mongodb";
 import { Collections } from '../../types';
 import { DefaultSession } from 'next-auth';
+import { TypeUser } from '../../types';
 
 declare module "next-auth" {
   interface Session extends DefaultSession{
@@ -113,15 +114,16 @@ export const authOptions : AuthOptions = {
       }
       return token;
     },
-    async session({session, token}){
+    async session({session, token, user}){
       if(session?.user){
-        const userData = await User.findOne({email: session.user.email, provider: token.provider}).lean().exec();
-        session.user._id= userData?._id;
-        session.user.provider = userData?.provider;
-        session.user.collections = userData?.collections;
-        console.log(session)
-        return session;
+        const userData : TypeUser = await User.findOne({email: session.user.email, provider: token.provider}).exec();
+        if(userData){
+          session.user._id= userData?._id;
+          session.user.provider = userData?.provider;
+          session.user.collections = userData?.collections;
+        }
       } 
+      return session;
     },
   },
   session: {
