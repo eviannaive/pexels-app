@@ -15,7 +15,7 @@ import { LoadingFull } from '@/components/Loading';
 	
 export default function Dashboard() {
 	const { data: session, status, update } = useSession();
-	const _id = session?.user._id
+	const _id = session ? session?.user?._id  : null;
 	const swiperRef = useRef();
 	const [ enlargeShow, setEnlargeShow ] = useState(false);
 	const [ editMode, setEditMode ] = useState(false);
