@@ -17,7 +17,7 @@ export default function DashboardLayout({
     }else{
       setLoading(false)
     }
-  },[])
+  },[session])
   return (
     <>
       {loading && (<LoadingFull />)}

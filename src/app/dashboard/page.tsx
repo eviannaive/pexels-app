@@ -171,7 +171,7 @@ export default function Dashboard() {
 										session?.user?.collections[groupIndex]?.photos.map((p,index)=>(
 											<div className='w-1/5 p-1 max-[840px]:w-1/3 max-[500px]:w-full group hover:z-30' key={index}>
 												<div className='pb-[100%] relative cursor-pointer overflow-hidden' box-wrap="">
-													<img src={p.imgSrc} className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]' onError={()=>{imgLoadError(p.imgId)}} onClick={handleEnlarge} img-id={p.imgId}/>
+													<img src={p.imgSrc} className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]' onError={()=>{imgLoadError(p.imgId)}} onClick={handleEnlarge} img-id={p.imgId} alt=""/>
 													{
 														editMode && (
 														<div className='absolute top-[15px] right-[15px] transition group-hover:opacity-100'>

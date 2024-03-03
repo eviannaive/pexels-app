@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 // let isConnected = false;
+console.log(process.env.MONGODB_CONNECTION,'urllll')
 
 export async function connectDB(){
   // if(isConnected){
@@ -9,7 +10,7 @@ export async function connectDB(){
   // }
   try{
     console.log('連接DB...npm run dev');
-    await mongoose.connect('mongodb://127.0.0.1/pexelsApp').then(()=>{
+    await mongoose.connect(String(process.env.MONGODB_CONNECTION)).then(()=>{
       console.log('connect DB successful')
       // isConnected = true
     })
