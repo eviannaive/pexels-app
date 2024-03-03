@@ -20,7 +20,7 @@ const logItem = {
     icon: 'faRightToBracket'
   };
 
-export default function Nav({list}:{list: {name: string,link: string, icon: keyof typeof faUser}[]}){
+export default function Nav({list}:{list: {name: string,link: string, icon: string}[]}){
   const { data: session, status, update } = useSession();
   const [ open, setOpen ] = useState(false);
   const [ dropdown, setDropdown ] = useState(false);

@@ -1,7 +1,7 @@
 "use client"
 import { TextTitle } from '@/components/Text';
 import { ButtonLogin } from '@/components/Buttons';
-import { signIn, signOut } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import { useState, useTransition, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -11,13 +11,13 @@ import { motion, MotionConfig } from "framer-motion"
 export default function Login(){
   const [formSwitch, setFormSwitch] = useState(true);
   const [registerStep, setRegisterStep] = useState(false);
-  const emailRef = useRef('');
-  const passwordRef = useRef('');
-  const signUpEmail = useRef('');
-  const usernameRef = useRef('');
-  const firstPw = useRef('');
-  const confirmPw = useRef('');
   const [ error, setError ] = useState("");
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const signUpEmail = useRef<HTMLInputElement>(null);
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const firstPw = useRef<HTMLInputElement>(null);
+  const confirmPw = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -31,11 +31,11 @@ export default function Login(){
     signIn(provider,{callbackUrl: defaultUrl})
   }
 
-  const handleSubmit = async (e) =>{
+  const handleSubmit = async (e :React.FormEvent<HTMLFormElement>) =>{
     e.preventDefault();
     setError('');
-    const email = emailRef.current.value;
-    const password = passwordRef.current.value;
+    const email = emailRef.current?.value;
+    const password = passwordRef.current?.value;
     if(!email || !password) return setError('Please enter email and password')
     startTransition(async()=>{
       try{
@@ -56,10 +56,10 @@ export default function Login(){
       }
     })
   }
-  const handleRegister = async(e) => {
+  const handleRegister = async(e :React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
-    axios.post('/api/register',{email: signUpEmail.current.value})
+    axios.post('/api/register',{email: signUpEmail.current?.value})
     .then((res)=>{
       setRegisterStep(true)
     })
@@ -68,16 +68,16 @@ export default function Login(){
       setError(err?.response.data.message)
     })
   }
-  const finalRegister = async(e) =>{
+  const finalRegister = async(e : React.MouseEvent<HTMLButtonElement>) =>{
     e.preventDefault();
     setError('');
-    if(firstPw.current.value !== confirmPw.current.value){
+    if(firstPw.current?.value !== confirmPw.current?.value){
       return setError('Passwords do not match!')
     }
     axios.post('/api/register/final',{
-      name: usernameRef.current.value,
-      email: signUpEmail.current.value,
-      password: confirmPw.current.value,
+      name: usernameRef.current?.value,
+      email: signUpEmail.current?.value,
+      password: confirmPw.current?.value,
     })
     .then((res)=>{
       console.log('送出成功')

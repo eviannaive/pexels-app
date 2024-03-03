@@ -9,14 +9,15 @@ import { AuthOptions } from 'next-auth';
 import { nanoid } from 'nanoid';
 import { ObjectId } from "mongodb";
 import { Collections } from '../../types';
+import { DefaultSession } from 'next-auth';
 
 declare module "next-auth" {
-  interface Session {
+  interface Session extends DefaultSession{
     user?: {
       _id: ObjectId,
       provider: string,
       collections: Collections[]
-    }
+    } & DefaultSession['user']
   }
 }
 

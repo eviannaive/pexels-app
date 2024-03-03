@@ -12,21 +12,18 @@ import { Enlarge } from '@/components/Enlarge';
 import axios from 'axios';
 import delay from '@/lib/delay';
 import { LoadingFull } from '@/components/Loading';
+import { Swiper as typeSwiper } from 'swiper';
 	
 export default function Dashboard() {
-	const { data: session, status, update } = useSession();
+	const { data: session, update } = useSession();
 	const _id = session?.user?._id;
-	const swiperRef = useRef();
 	const [ enlargeShow, setEnlargeShow ] = useState(false);
 	const [ editMode, setEditMode ] = useState(false);
 	const [ fixedItem, setFixedItem] = useState(false);
+	const [ swiper, setSwiper ] = useState<null | typeSwiper>(null)
 	const [ isPending, startTransition] = useTransition();
-	// const [ editGroupData, setEditGroupData ] = useState({
-	// 	id: '',
-	// 	name: '',
-	// 	newName: ''
-	// })
-	const { modalShow, setModalShow, modalType, setModalType,imgId, setImgId, imgSrc, setImgSrc, downloadImg,memoData, setMemoData,groupIndex, setGroupIndex } : any = useModalContext()
+
+	const { setModalShow, setModalType, setImgId, setImgSrc, downloadImg, setMemoData,groupIndex, setGroupIndex } : any = useModalContext()
 	const imgLoadError = (id : string) => {
 		imgValidateError(id,(res)=>{
 			console.log(res)
@@ -34,27 +31,30 @@ export default function Dashboard() {
 		})
 	}
 
-	const handleEnlarge = (e) => {
-		console.log(e.target,String(e.target?.getAttribute('img-id')))
-		setImgId(String(e.target?.getAttribute('img-id')))
-		setImgSrc(String(e.target?.getAttribute('src')))
+	const handleEnlarge = (e : React.MouseEvent<HTMLImageElement>) => {
+		console.log(e.target,String((e.target as HTMLElement)?.getAttribute('img-id')))
+		setImgId(String((e.target as HTMLElement)?.getAttribute('img-id')))
+		setImgSrc(String((e.target as HTMLElement)?.getAttribute('src')))
 		setEnlargeShow(true)
 	}
 
-	const handleDownload = (e) => {
-		downloadImg(String(e.target?.closest('[box-wrap]').firstChild.getAttribute('img-id')),String(e.target?.closest('[box-wrap]').firstChild.getAttribute('src')))
+	const handleDownload = (e : React.MouseEvent<HTMLDivElement>) => {
+		const $el = (e.target as HTMLElement)?.closest('[box-wrap]')?.
+		firstChild;
+		downloadImg(String(($el as HTMLElement).getAttribute('img-id')),String(($el as HTMLElement).getAttribute('src')))
 	}
 
 	const handleEdit = async() => {
 		setEditMode(!editMode);
 		await(500);
-		swiperRef.current.update()
+		swiper?.update()
 	}
 
-	const deletePhoto = (e) => {
+	const deletePhoto = (e : React.MouseEvent<HTMLDivElement>) => {
 		startTransition(async()=>{
-			const group = session?.user.collections[groupIndex].groupId;
-			const img = String(e.target?.closest('[box-wrap]').firstChild.getAttribute('img-id'))
+			const group = session?.user?.collections[groupIndex].groupId;
+			const $el = (e.target as HTMLElement)?.closest('[box-wrap]')?.firstChild 
+			const img = String(($el as HTMLElement).getAttribute('img-id'))
 			await axios.delete(`http://localhost:3000/api/category/${_id}/${group}/${img}`).then((res)=>{
 				console.log(res.data)
 				update()
@@ -62,18 +62,20 @@ export default function Dashboard() {
 		})
   }
 
-	const handleChangeName = (e) =>{
-		const id = e.target.closest('[goroup-id]').getAttribute('goroup-id');
-		const group = session?.user.collections.find((g)=>g.groupId === id)
+	const handleChangeName = (e : React.MouseEvent<HTMLButtonElement>) =>{
+		const $el = (e.target as HTMLElement)?.closest('[group-id]')
+		const id = ($el as HTMLElement)?.getAttribute('group-id');
+		const group = session?.user?.collections.find((g)=>g.groupId === id)
 		setMemoData(group)
 		setModalType('changeName')
 		setModalShow(true)
-		const input = e.target.closest('[goroup-id]').querySelector('input');
+		const input = ($el as HTMLElement)?.querySelector('input');
 	}
 
-	const handleDeleteGroup = (e) => {
-		const id = e.target.closest('[goroup-id]').getAttribute('goroup-id');
-		const group = session?.user.collections.find((g)=>g.groupId === id)
+	const handleDeleteGroup = (e : React.MouseEvent<HTMLButtonElement>) => {
+		const $el = (e.target as HTMLElement)?.closest('[group-id]')
+		const id = ($el as HTMLElement)?.getAttribute('group-id');
+		const group = session?.user?.collections.find((g)=>g.groupId === id)
 		setMemoData(group)
 		setModalType('doubleCheck')
 		setModalShow(true)
@@ -97,23 +99,6 @@ export default function Dashboard() {
 				)
 			}
 			<Enlarge state={enlargeShow} setEnlargeShow={setEnlargeShow}/>
-			{/* collection<br/> */}
-			{/* {
-				session? (
-					<>
-						<p>provider: {session?.user.provider}</p>
-						<p>
-							username: {session?.user.name}
-						</p>
-						<p>
-							email: {session?.user.email}
-						</p>
-						<button onClick={()=>{
-							signOut()
-						}}>sign out</button>
-					</>
-				) : ''
-			} */}
 			{
 				session? (
 					<div className='bg-white rounded-lg w-full max-w-[1500px] p-[20px] relative max-[576px]:px-[10px] mx-auto'>
@@ -124,14 +109,14 @@ export default function Dashboard() {
 						<div className='h-[50px]'>
 							<div className={`${fixedItem?'fixed-controlbar': ''}`}>
 								<div className='flex relative text-default items-center py-[10px]'>
-									<button onClick={()=> swiperRef.current.slidePrev()} className='w-[30px] h-[30px] shrink-0 max-[840px]:w-[20px]'>
+									<button onClick={()=> swiper?.slidePrev()} className='w-[30px] h-[30px] shrink-0 max-[840px]:w-[20px]'>
 										<FontAwesomeIcon icon={faCaretLeft}/>
 									</button>
-									<Swiper spaceBetween={10} slidesPerView='auto' onSwiper={(swiper) => swiperRef.current = swiper}>
+									<Swiper spaceBetween={10} slidesPerView='auto' onSwiper={(swiper) => setSwiper(swiper)}>
 										{
-											session?.user.collections?.map((g,index)=>(
+											session?.user?.collections?.map((g,index)=>(
 												<SwiperSlide style={{width: 'auto'}} key={index}>
-													<div className={`flex items-center rounded-50px border border-teal-400 transition duration-300 hover:bg-teal-500 hover:text-white cursor-pointer py-[2px] ${index===groupIndex? 'bg-teal-500 text-white' : ''} ${editMode?'px-[10px]':'px-[20px]'}`} goroup-id={g.groupId} onClick={()=>setGroupIndex(index)}>
+													<div className={`flex items-center rounded-50px border border-teal-400 transition duration-300 hover:bg-teal-500 hover:text-white cursor-pointer py-[2px] ${index===groupIndex? 'bg-teal-500 text-white' : ''} ${editMode?'px-[10px]':'px-[20px]'}`} group-id={g.groupId} onClick={()=>setGroupIndex(index)}>
 														<span>{g.name}</span>
 														{
 															editMode && (
@@ -139,7 +124,7 @@ export default function Dashboard() {
 																	<button className='ml-[6px] w-[20px] h-[20px] rounded-full bg-white/70 flex-center border border-slate-400/50 hover:bg-white/100 hover:border-teal-500/50' onClick={handleChangeName}>
 																		<FontAwesomeIcon icon={faPen} color="#da7d8d" size="2xs"/>
 																	</button>
-																	<button className='ml-[3px] w-[20px] h-[20px] rounded-full bg-white/70 flex-center hover:bg-white/100 border border-slate-400/50 hover:bg-white/100 hover:border-teal-500/50' onClick={handleDeleteGroup}>
+																	<button className='ml-[3px] w-[20px] h-[20px] rounded-full bg-white/70 flex-center hover:bg-white/100 border border-slate-400/50 hover:border-teal-500/50' onClick={handleDeleteGroup}>
 																		<FontAwesomeIcon icon={faTrash} color="#da7d8d" size="2xs"/>
 																	</button>
 																</>
@@ -150,7 +135,7 @@ export default function Dashboard() {
 											))
 										}
 									</Swiper>
-									<button onClick={()=> swiperRef.current.slideNext()} className='w-[30px] h-[30px] shrink-0 max-[840px]:w-[20px]'>
+									<button onClick={()=> swiper?.slideNext()} className='w-[30px] h-[30px] shrink-0 max-[840px]:w-[20px]'>
 										<FontAwesomeIcon icon={faCaretRight}/>
 									</button>
 								</div>

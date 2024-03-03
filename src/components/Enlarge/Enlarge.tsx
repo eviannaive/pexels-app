@@ -8,7 +8,7 @@ import { useModalContext } from "@/context/ModalContext";
 import imgValidateError from '@/lib/imgValidateError'
 import { AxiosResponse } from 'axios';
 
-export default function Enlarge({state, setEnlargeShow, eventLike}:{state: boolean, setEnlargeShow: Dispatch<SetStateAction<boolean>>, eventLike?: (e:MouseEvent)=>void}){
+export default function Enlarge({state, setEnlargeShow, eventLike}:{state: boolean, setEnlargeShow: Dispatch<SetStateAction<boolean>>, eventLike?: (e: React.MouseEvent<HTMLDivElement>)=>void}){
   let [ scope, animate] = useAnimate();
   let imgRef = useRef<any>(null)
   let { imgId, imgSrc, setImgSrc, downloadImg} : any = useModalContext();

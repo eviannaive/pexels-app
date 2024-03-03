@@ -17,12 +17,13 @@ import { useSearchContext } from '@/context/searchContext';
 import { LoadingFull } from '@/components/Loading';
 import { NoResult } from '@/components/NoResult';
 import SearchBar from '@/components/SearchBar';
-import ImgBox from '@/components/ImgBox';
 import { Enlarge } from '@/components/Enlarge';
 
 const pexelsKey = process.env.NEXT_PUBLIC_PEXELS_KET;
 
-const gridBreakpoints = {
+const gridBreakpoints :{
+	[key:string]: number
+} = {
 	'768': 4,
 	'450': 3,
 	'0': 2
@@ -42,8 +43,7 @@ export default function Photos() {
 			inputRef
 		} : any = useSearchContext()
 		
-		const { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc,downloadImg} : any = useModalContext()
-		
+		const { setModalShow, setModalType, setImgId, setImgSrc,downloadImg} : any = useModalContext()
 		
 		const perPage = 12;
 	
@@ -55,9 +55,8 @@ export default function Photos() {
 		const [gridCol, setGridCol ] = useState(4)
 	
 		const findBreakpoints = () => {
-			const key = Object.keys(gridBreakpoints).reverse().find((b)=>window.innerWidth>Number(b))
-			setGridCol(gridBreakpoints[key]);
-			console.log(gridBreakpoints[key],'keyyyyyys',window.innerWidth,Object.keys(gridBreakpoints).reverse())
+			const key : keyof typeof gridBreakpoints = Object.keys(gridBreakpoints).reverse().find((b)=>window.innerWidth>Number(b)) ?? "0"
+			setGridCol(gridBreakpoints?.[key]);
 		} 
 
 		const windowResize = () => {
@@ -67,21 +66,22 @@ export default function Photos() {
 			}
 		}
 
-		const modalOpen = (e: MouseEvent) => {
+		const modalOpen = (e : React.MouseEvent<HTMLDivElement>) => {
+			const $el = (e.target as HTMLElement)?.closest('[box-wrap]')?.firstChild;
 			setModalShow(true);
 			session ? setModalType('like') : setModalType('login');
-			setImgId(String(e.target?.closest('[box-wrap]').firstChild.getAttribute('img-id')))
-			setImgSrc(String(e.target?.closest('[box-wrap]').firstChild.getAttribute('src')))
+			setImgId(String(($el as HTMLElement)?.getAttribute('img-id')))
+			setImgSrc(String(($el as HTMLElement)?.getAttribute('src')))
 		}
 
-		const handleDownload = (e) => {
-			console.log(String(e.target?.closest('[box-wrap]').firstChild.getAttribute('img-id')),String(e.target?.closest('[box-wrap]').firstChild.getAttribute('src')))
-			downloadImg(String(e.target?.closest('[box-wrap]').firstChild.getAttribute('img-id')),String(e.target?.closest('[box-wrap]').firstChild.getAttribute('src')))
+		const handleDownload = (e : React.MouseEvent<HTMLDivElement>) => {
+			const $el = (e.target as HTMLElement)?.closest('[box-wrap]')?.firstChild;
+			downloadImg(String(($el as HTMLElement)?.getAttribute('img-id')),String(($el as HTMLElement)?.getAttribute('src')))
 		}
 		
-		const handleEnlarge = (e) => {
-			setImgId(String(e.target?.getAttribute('img-id')))
-			setImgSrc(String(e.target?.getAttribute('src')))
+		const handleEnlarge = (e: React.MouseEvent<HTMLImageElement>) => {
+			setImgId(String((e.target as HTMLElement)?.getAttribute('img-id')))
+			setImgSrc(String((e.target as HTMLElement)?.getAttribute('src')))
 			setEnlargeShow(true)
 		}
 

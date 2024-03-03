@@ -25,15 +25,15 @@ const initPhoto = async () => {
 
 export default function Home() {
   const initOnce = useRef(false)
-  const [ data, setData ] = useState([])
-  const marqueeData = async() => {
+  const [ data, setData ] = useState<any[]>([])
+  const setMarqueeData = async() => {
     const dataArr = await Promise.all(Array(2).fill(null).map(d=>initPhoto()));
     setData(dataArr)
     initOnce.current = true
   }
   useEffect(()=>{
     if(!initOnce.current){
-      marqueeData();
+      setMarqueeData();
     }
   },[])
 
