@@ -21,7 +21,7 @@ export default function Login(){
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const defaultUrl = "http://localhost:3000/dashboard";
+  const defaultUrl = "/dashboard";
 
   const handleFormSwitch = () => {
     setFormSwitch(!formSwitch)

@@ -2,7 +2,7 @@
 
 import { useModalContext } from "@/context/ModalContext";
 import { useRouter} from "next/navigation"
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import delay from "@/lib/delay";
 import { useAnimate } from "framer-motion"
 import { ButtonDefault } from "../Buttons";
@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckToSlot,faTriangleExclamation,faUser } from "@fortawesome/free-solid-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { Collections } from "../../../types";
+import { LoadingFull } from "../Loading";
 
 
 export default function ModdleWrapper(){
@@ -24,6 +25,7 @@ export default function ModdleWrapper(){
   let [ scope, animate] = useAnimate();
   let inputRef = useRef<HTMLInputElement>(null);
   let imgRef = useRef<HTMLImageElement>(null);
+  let [ isPending, startTransition ] = useTransition();
 
   const modalClose = async(callback ?: ()=>void) => {
     if(modalShow){
@@ -62,19 +64,16 @@ export default function ModdleWrapper(){
 
   const sendLike = async(e : React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = {
-      imgId,
-      imgSrc,
-    }
-    await axios.post(`/api/category/${_id}/${selectGroup}`,{
-      imgId,
-      imgSrc,
-    }).then((res)=>{
-      console.log(data,'傳送中．．．')
-      if(res.status.toString().startsWith('2')){
-        photoExist(res.data.exist)
-      }
-      update()
+    startTransition(async()=>{
+      await axios.post(`/api/category/${_id}/${selectGroup}`,{
+        imgId,
+        imgSrc,
+      }).then((res)=>{
+        if(res.status.toString().startsWith('2')){
+          photoExist(res.data.exist)
+        }
+        update()
+      })
     })
   }
 
@@ -148,6 +147,7 @@ export default function ModdleWrapper(){
       {
         modalShow && (
           <div className={`fixed w-full h-full top-0 left-0 z-[1000] flex bg-slate-600/70 transition-all justify-center items-center p-[30px] duration-300`} ref={scope} modal-type={modalType}>
+            { isPending && <LoadingFull />}
             <div className="w-full max-w-80 bg-white rounded-2xl p-[30px] text-lg relative text-default text-center scale-0 duration-300" id="modalBox">
               {
                 modalType != 'changeAvatar'?(

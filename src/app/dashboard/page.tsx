@@ -53,7 +53,7 @@ export default function Dashboard() {
 			const group = session?.user?.collections[groupIndex].groupId;
 			const $el = (e.target as HTMLElement)?.closest('[box-wrap]')?.firstChild 
 			const img = String(($el as HTMLElement).getAttribute('img-id'))
-			await axios.delete(`http://localhost:3000/api/category/${_id}/${group}/${img}`).then((res)=>{
+			await axios.delete(`/api/category/${_id}/${group}/${img}`).then((res)=>{
 				update()
 			})
 		})

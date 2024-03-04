@@ -8,7 +8,7 @@ import { ModalContextProvider } from "@/context/ModalContext"
 import { ModalWrapper } from "@/components/ModalWrapper";
 import { NavData } from '../../types';
 
-// const isDev = process.env.NODE_DEV?? false;
+
 const inter = Inter({ subsets: ['latin'] })
 const navData : NavData[] = [
   {
@@ -32,10 +32,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const isDev = process.env.NODE_DEV?? false;
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* {isDev && <script src="http://localhost:8097"></script>} */}
+        {/* {!!isDev && <script src="http://localhost:8097"></script>} */}
         <AuthProvider>
           <ModalContextProvider>
             <ModalWrapper/>

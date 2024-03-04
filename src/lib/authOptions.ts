@@ -114,7 +114,7 @@ export const authOptions : AuthOptions = {
     },
     async session({session, token, user}){
       if(session?.user){
-        const userData : TypeUser = await User.findOne({email: session.user.email, provider: token.provider}).exec();
+        const userData : TypeUser | undefined = await User.findOne({email: session.user.email, provider: token.provider}).exec();
         if(userData){
           session.user._id= userData?._id;
           session.user.provider = userData?.provider;
