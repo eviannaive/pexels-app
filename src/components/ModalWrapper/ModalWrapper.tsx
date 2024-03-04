@@ -87,21 +87,25 @@ export default function ModdleWrapper(){
   }
 
   const changeGroupName = async() => {
-		await axios.patch(`/api/category/${_id}/${memoData.groupId}`,{
-      newName: memoData.name
-    }).then(async(res)=>{
-      await modalClose(async()=>{setModalType('success')})
-			update()
+    startTransition(async()=>{
+      await axios.patch(`/api/category/${_id}/${memoData.groupId}`,{
+        newName: memoData.name
+      }).then(async(res)=>{
+        await modalClose(async()=>{setModalType('success')})
+        await update()
+      })
     })
   }
 
   const deleteGroup = async() => {
-    await axios.delete(`/api/category/${_id}/${memoData.groupId}`).then(async(res)=>{
-      await modalClose(async()=>{setModalType('success')})
-			update();
-      const collections = session!.user!.collections;
-      setGroup(collections);
-      setGroupIndex(groupIndex - 1 > 0? groupIndex - 1 : collections.length - 2)
+    startTransition(async()=>{
+      await axios.delete(`/api/category/${_id}/${memoData.groupId}`).then(async(res)=>{
+        await modalClose(async()=>{setModalType('success')})
+        update();
+        const collections = session!.user!.collections;
+        setGroup(collections);
+        setGroupIndex(groupIndex - 1 > 0? groupIndex - 1 : collections.length - 2)
+      })
     })
   }
 
