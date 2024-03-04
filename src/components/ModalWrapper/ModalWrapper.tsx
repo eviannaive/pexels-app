@@ -43,18 +43,20 @@ export default function ModdleWrapper(){
   }
 
   const newGroup = async() => {
-    const data = inputRef.current?.value;
-    if(!data){
-      return
-    }
-    await axios.post(`/api/category/${session?.user?._id}`,{
-      fileName: data
-    }).then((res)=>{
-      const data = res.data.collections;
-      setGroup(data);
-      inputRef.current!.value = ''
-    }).catch((err)=>{
-      console.log(err)
+    startTransition(async()=>{
+      const data = inputRef.current?.value;
+      if(!data){
+        return
+      }
+      await axios.post(`/api/category/${session?.user?._id}`,{
+        fileName: data
+      }).then((res)=>{
+        const data = res.data.collections;
+        setGroup(data);
+        inputRef.current!.value = ''
+      }).catch((err)=>{
+        console.log(err)
+      })
     })
   }
 
@@ -87,14 +89,26 @@ export default function ModdleWrapper(){
   }
 
   const changeGroupName = async() => {
-    startTransition(async()=>{
-      await axios.patch(`/api/category/${_id}/${memoData.groupId}`,{
-        newName: memoData.name
-      }).then(async(res)=>{
-        await modalClose(async()=>{setModalType('success')})
-        await update()
+    let result;
+    if(memoData.name){
+      await new Promise((resolve)=>{
+        startTransition(async()=>{
+          await axios.patch(`/api/category/${_id}/${memoData.groupId}`,{
+            newName: memoData.name
+          }).then((res)=>{
+            result = res;
+            resolve(result)
+          })
+        })
       })
-    })
+      await modalClose(async()=>{setModalType('success');await update()})
+    }
+    // startTransition(async()=>{
+    //   await axios.patch(`/api/category/${_id}/${memoData.groupId}`,{
+    //     newName: memoData.name
+    //   }).then(async(res)=>{
+    //   })
+    // })
   }
 
   const deleteGroup = async() => {

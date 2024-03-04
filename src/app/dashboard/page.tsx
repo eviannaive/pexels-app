@@ -148,7 +148,7 @@ export default function Dashboard() {
 											<div className='w-full h-[300px] flex-center flex-col gap-2 text-xl text-default text-center'>
 												<div>This group has no collectibles.</div>
 												<div className='block mt-[10px]'>
-													<ButtonExplore text="Let's Explore" />
+													<ButtonExplore text="Let's Explore" target='/photos/' />
 												</div>
 											</div>
 		
