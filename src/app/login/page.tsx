@@ -7,6 +7,7 @@ import { useState, useTransition, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { motion, MotionConfig } from "framer-motion"
+import { LoadingFull } from '@/components/Loading';
 
 export default function Login(){
   const [formSwitch, setFormSwitch] = useState(true);
@@ -70,24 +71,27 @@ export default function Login(){
   const finalRegister = async(e : React.MouseEvent<HTMLButtonElement>) =>{
     e.preventDefault();
     setError('');
-    if(firstPw.current?.value !== confirmPw.current?.value){
-      return setError('Passwords do not match!')
-    }
-    axios.post('/api/register/final',{
-      name: usernameRef.current?.value,
-      email: signUpEmail.current?.value,
-      password: confirmPw.current?.value,
-    })
-    .then((res)=>{
-      // 用router不能刷新
-      window.location.reload();
-    })
-    .catch((err)=>{
-      console.log(err)
+    startTransition(async()=>{
+      if(firstPw.current?.value !== confirmPw.current?.value){
+        return setError('Passwords do not match!')
+      }
+      axios.post('/api/register/final',{
+        name: usernameRef.current?.value,
+        email: signUpEmail.current?.value,
+        password: confirmPw.current?.value,
+      })
+      .then((res)=>{
+        // 用router不能刷新
+        window.location.reload();
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
     })
   }
   return (
     <div className="flex h-full min-h-custom justify-center items-center py-[60px] px-[20px]">
+      { isPending && <LoadingFull />}
       <MotionConfig transition={{ duration: 0.5, delay: 0.3 }}>
         <motion.div className="flex flex-col  max-w-80 w-full" initial={{ scale: 0 }} animate={{ scale: 1 }}>
           <div className='text-center'>

@@ -55,6 +55,10 @@ export default function Nav({list}:{list: NavData[]}){
   },[avatar])
   
   useEffect(()=>{
+    if(session?.error){
+      console.warn('auth error,sign out...')
+      signOut()
+    }
     window.addEventListener('click', ()=>{
       setOpen(false)
     })

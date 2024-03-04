@@ -14,6 +14,7 @@ import { TypeUser } from '../../types';
 
 declare module "next-auth" {
   interface Session extends DefaultSession{
+    error?: any,
     user?: {
       _id: ObjectId,
       provider: string,
@@ -113,15 +114,24 @@ export const authOptions : AuthOptions = {
       return token;
     },
     async session({session, token, user}){
-      if(session?.user){
-        const userData : TypeUser | undefined = await User.findOne({email: session.user.email, provider: token.provider}).exec();
-        if(userData){
-          session.user._id= userData?._id;
-          session.user.provider = userData?.provider;
-          session.user.collections = userData?.collections;
-        }
-      } 
-      return session;
+      try{
+        if(session?.user){
+          await connectDB();
+          const userData : TypeUser | undefined = await User.findOne({email: session.user.email, provider: token.provider}).exec();
+          if(userData){
+            session.user._id= userData?._id;
+            session.user.provider = userData?.provider;
+            session.user.collections = userData?.collections;
+          }else{
+            session.error = 'user not find';
+          }
+        } 
+        return session;
+      }catch(error){
+        console.warn('next-auth error:',error)
+        session.error = error;
+        return session
+      }
     },
   },
   session: {
