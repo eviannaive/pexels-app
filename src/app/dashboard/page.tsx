@@ -10,9 +10,9 @@ import imgValidateError from '@/lib/imgValidateError';
 import { useModalContext } from "@/context/ModalContext";
 import { Enlarge } from '@/components/Enlarge';
 import axios from 'axios';
-import delay from '@/lib/delay';
 import { LoadingFull } from '@/components/Loading';
 import { Swiper as typeSwiper } from 'swiper';
+import { ButtonExplore } from '@/components/Buttons';
 	
 export default function Dashboard() {
 	const { data: session, update } = useSession();
@@ -145,7 +145,12 @@ export default function Dashboard() {
 									<>
 									{
 										session?.user?.collections.length && !session?.user?.collections[groupIndex].photos.length ? (
-											<div className='w-full h-[300px] flex-center'>Empty</div>
+											<div className='w-full h-[300px] flex-center flex-col gap-2 text-xl text-default text-center'>
+												<div>This group has no collectibles.</div>
+												<div className='block mt-[10px]'>
+													<ButtonExplore text="Let's Explore" />
+												</div>
+											</div>
 		
 										): ''
 									}

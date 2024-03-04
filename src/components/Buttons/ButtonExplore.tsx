@@ -2,7 +2,7 @@
 import { motion, MotionConfig } from "framer-motion"
 import { useRouter } from "next/navigation"
 
-export default function ButtonExplore({text,delay,target}:{text:string,delay:number,target?:any}){
+export default function ButtonExplore({text,delay,target}:{text:string,delay?:number,target?:any}){
   const router = useRouter();
   return (
     <MotionConfig transition={{ duration: 0.5, delay: delay }}>
