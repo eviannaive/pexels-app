@@ -151,6 +151,7 @@ export default function Photos() {
 	}
 
 	useEffect(()=>{
+		findBreakpoints()
 		if (!initFetch.current) {
 			const {query, page} = urlMemo.getSearchProp();
 			if(query) {
@@ -169,7 +170,7 @@ export default function Photos() {
 			findBreakpoints()
 		})
 
-		return ()=>{setWinSize(windowResize());findBreakpoints()}
+		return ()=>{setWinSize(windowResize())}
 	},[]) 
 
 	// useEffect(()=>{
