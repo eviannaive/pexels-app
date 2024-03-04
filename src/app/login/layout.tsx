@@ -10,7 +10,7 @@ export default function LoginLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { data: session } = useSession();
+  const { data: session,status } = useSession();
   const [ loading , setLoading] = useState(true);
   useEffect(()=>{
     if(session){
@@ -18,7 +18,7 @@ export default function LoginLayout({
     }else{
       setLoading(false)
     }
-  },[])
+  },[status])
   return (
     <>
       {loading && (<LoadingFull />)}

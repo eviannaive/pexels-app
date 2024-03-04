@@ -123,6 +123,12 @@ export default function ModdleWrapper(){
   const handleChangeAvatar = (e : React.ChangeEvent<HTMLInputElement>) => {
     const render = new FileReader();
     const files = (e.target as HTMLInputElement)?.files;
+    const size = files ? files[0]?.size : ''
+    const maxFileSize = 2 * 1024 * 1024;
+    if(size && size >= maxFileSize){
+      setModalType('overSize');
+      return;
+    }
     render.onload = () => {
       if(render.readyState === 2){
         setAvatarPreview(render.result)
@@ -335,6 +341,21 @@ export default function ModdleWrapper(){
                     </div>
                   </div>
                 ) : ''
+              }
+              {
+                modalType === 'overSize' ? 
+                (
+                  <div className="py-[60px]">
+                    <div className="h-[120px] p-[20px] rounded-full flex flex-col justify-center items-center m-auto">
+                      <FontAwesomeIcon icon={faTriangleExclamation} color="#cd3c56" size="4x"/>
+                      <p className="mt-[20px] w-full">FAIL</p>
+                      <p className="w-full">Maximum upload file size: 2MB</p>
+                      <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={()=>{setModalType('changeAvatar')}}>Understand.
+                    </button>
+                    </div>
+                  </div>
+                )
+                : ''
               }
             </div>
           </div>

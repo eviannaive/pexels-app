@@ -52,7 +52,7 @@ export default function Nav({list}:{list: NavData[]}){
 
   useEffect(()=>{
     getUserData();
-  },[avatar])
+  },[status,avatar])
   
   useEffect(()=>{
     if(session?.error){
