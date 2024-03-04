@@ -89,15 +89,13 @@ export default function ModdleWrapper(){
   }
 
   const changeGroupName = async() => {
-    let result;
     if(memoData.name){
       await new Promise((resolve)=>{
         startTransition(async()=>{
           await axios.patch(`/api/category/${_id}/${memoData.groupId}`,{
             newName: memoData.name
           }).then((res)=>{
-            result = res;
-            resolve(result)
+            resolve(res)
           })
         })
       })
@@ -112,15 +110,29 @@ export default function ModdleWrapper(){
   }
 
   const deleteGroup = async() => {
-    startTransition(async()=>{
-      await axios.delete(`/api/category/${_id}/${memoData.groupId}`).then(async(res)=>{
-        await modalClose(async()=>{setModalType('success')})
-        update();
-        const collections = session!.user!.collections;
-        setGroup(collections);
-        setGroupIndex(groupIndex - 1 > 0? groupIndex - 1 : collections.length - 2)
+    await new Promise(async(resolve)=>{
+      startTransition(async()=>{
+        await axios.delete(`/api/category/${_id}/${memoData.groupId}`).then((res)=>{
+          resolve(res)
+        })
       })
     })
+    await modalClose(async()=>{
+      setModalType('success');
+      update();
+      const collections = session!.user!.collections;
+      setGroup(collections);
+      setGroupIndex(groupIndex - 1 > 0? groupIndex - 1 : collections.length - 2)
+    })
+    // startTransition(async()=>{
+    //   await axios.delete(`/api/category/${_id}/${memoData.groupId}`).then(async(res)=>{
+    //     await modalClose(async()=>{setModalType('success')})
+    //     update();
+    //     const collections = session!.user!.collections;
+    //     setGroup(collections);
+    //     setGroupIndex(groupIndex - 1 > 0? groupIndex - 1 : collections.length - 2)
+    //   })
+    // })
   }
 
   const handleChangeAvatar = (e : React.ChangeEvent<HTMLInputElement>) => {
