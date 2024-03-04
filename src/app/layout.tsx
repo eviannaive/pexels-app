@@ -8,7 +8,7 @@ import { ModalContextProvider } from "@/context/ModalContext"
 import { ModalWrapper } from "@/components/ModalWrapper";
 import { NavData } from '../../types';
 
-const isDev = process.env.NODE_DEV
+const isDev = process.env.NODE_DEV?? false;
 const inter = Inter({ subsets: ['latin'] })
 const navData : NavData[] = [
   {
