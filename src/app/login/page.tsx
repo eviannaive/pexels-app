@@ -3,7 +3,7 @@ import { TextTitle } from '@/components/Text';
 import { ButtonLogin } from '@/components/Buttons';
 import { signIn } from 'next-auth/react';
 import Image from 'next/image';
-import { useState, useTransition, useRef } from 'react';
+import { useState, useTransition, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { motion, MotionConfig } from "framer-motion"
@@ -89,6 +89,10 @@ export default function Login(){
       })
     })
   }
+  useEffect(()=>{
+    (emailRef.current as HTMLInputElement).value = 'guest@gmail.com';
+    (passwordRef.current as HTMLInputElement).value = '123456'
+  },[])
   return (
     <div className="flex h-full min-h-custom justify-center items-center py-[60px] px-[20px]">
       { isPending && <LoadingFull />}
@@ -104,7 +108,7 @@ export default function Login(){
             <div className={`text-teal-600 font-bold text-right transition-all  hover:text-orange-400 text-sm cursor-pointer ${!formSwitch ?'inline-block ml-3':'ml-auto'}`} onClick={handleFormSwitch}>{ formSwitch ? 'Sign up for free' : 'Log in'}</div>
             { formSwitch && (
               <form onSubmit={handleSubmit} className="mt-4 text-neutral-600">
-                <input name="email" type="email" className="border-2 w-full mt-1 rounded-md focus:outline-none p-1" placeholder="Email"  disabled={isPending} ref={emailRef}/>
+                <input name="email" type="email" className="border-2 w-full mt-1 rounded-md focus:outline-none p-1" placeholder="Email" disabled={isPending} ref={emailRef} />
                 <input name="password" type="password" className="border-2 w-full rounded-md focus:outline-none p-1 mt-2" placeholder="Password" disabled={isPending} ref={passwordRef}/>
                 {
                   error && (
