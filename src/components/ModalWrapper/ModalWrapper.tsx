@@ -101,12 +101,6 @@ export default function ModdleWrapper(){
       })
       await modalClose(async()=>{setModalType('success');await update()})
     }
-    // startTransition(async()=>{
-    //   await axios.patch(`/api/category/${_id}/${memoData.groupId}`,{
-    //     newName: memoData.name
-    //   }).then(async(res)=>{
-    //   })
-    // })
   }
 
   const deleteGroup = async() => {
@@ -124,15 +118,6 @@ export default function ModdleWrapper(){
       setGroup(collections);
       setGroupIndex(groupIndex - 1 > 0? groupIndex - 1 : collections.length - 2)
     })
-    // startTransition(async()=>{
-    //   await axios.delete(`/api/category/${_id}/${memoData.groupId}`).then(async(res)=>{
-    //     await modalClose(async()=>{setModalType('success')})
-    //     update();
-    //     const collections = session!.user!.collections;
-    //     setGroup(collections);
-    //     setGroupIndex(groupIndex - 1 > 0? groupIndex - 1 : collections.length - 2)
-    //   })
-    // })
   }
 
   const handleChangeAvatar = (e : React.ChangeEvent<HTMLInputElement>) => {
@@ -153,14 +138,28 @@ export default function ModdleWrapper(){
       await modalClose(async()=>{setModalType('success')})
       return;
     }
-    await axios.patch(`/api/profile/${_id}`,{
-      image: '',
-      imgData: avatarPreview 
-    }).then(async(res)=>{
-      await modalClose(async()=>{setModalType('success');
-      setAvatar(avatarPreview)})
-      update()
-    })
+    await new Promise(async(resolve)=>{
+      startTransition(async()=>{
+        await axios.patch(`/api/profile/${_id}`,{
+          image: '',
+          imgData: avatarPreview 
+        }).then((res)=>{resolve(res)})
+      })
+    });
+    modalClose(async()=>{
+      setModalType('success');
+      setAvatar(avatarPreview);
+      update()}
+    )
+    
+    // await axios.patch(`/api/profile/${_id}`,{
+    //   image: '',
+    //   imgData: avatarPreview 
+    // }).then(async(res)=>{
+    //   await modalClose(async()=>{setModalType('success');
+    //   setAvatar(avatarPreview)})
+    //   update()
+    // })
   }
 
   useEffect(()=>{
