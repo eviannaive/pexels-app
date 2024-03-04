@@ -52,7 +52,7 @@ export default function Nav({list}:{list: NavData[]}){
 
   useEffect(()=>{
     getUserData();
-  },[status, avatar])
+  },[avatar])
   
   useEffect(()=>{
     window.addEventListener('click', ()=>{

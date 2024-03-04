@@ -71,7 +71,7 @@ export default function ModdleWrapper(){
       imgSrc,
     }).then((res)=>{
       console.log(data,'傳送中．．．')
-      if(res.statusText === 'OK'){
+      if(res.status.toString().startsWith('2')){
         photoExist(res.data.exist)
       }
       update()
