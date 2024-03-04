@@ -42,7 +42,7 @@ export default function Enlarge({state, setEnlargeShow, eventLike}:{state: boole
     <>
       {
         state && (
-          <div className={`fixed w-full h-full top-0 left-0 z-[100] flex bg-zinc-800/90 opacity-0 justify-center items-center p-[30px] pt-[80px] duration-500`} ref={scope} onClick={modalClose}>
+          <div className={`fixed w-full h-full top-0 left-0 z-[100] flex bg-zinc-800/90 justify-center items-center p-[30px] pt-[80px] transition-all duration-500`} ref={scope} onClick={()=>{modalClose()}}>
             <button className='absolute top-[20px] right-[30px] text-white text-2xl opacity-60 hover:opacity-100' >✕</button>
             <div className="flex flex-col w-full h-full justify-center items-center" onClick={(e)=>{
               e.stopPropagation();

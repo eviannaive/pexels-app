@@ -48,7 +48,6 @@ export const authOptions : AuthOptions = {
       async authorize(credentials){
         try {
           await connectDB();
-          console.log("Credentials",credentials);
           const foundUser = await User.findOne({email: credentials?.email})
           if(foundUser) {
             console.log("User Exists");
@@ -91,7 +90,6 @@ export const authOptions : AuthOptions = {
             const {name, email, image, picture } : any = profile;
             const foundUser = await User.findOne({email: email, provider: provider}).lean().exec();
             if(!foundUser){
-              console.log('this is false')
               const saveData = await User.create({
                 name: name,
                 email: email,

@@ -70,6 +70,7 @@ export default function ModdleWrapper(){
       imgId,
       imgSrc,
     }).then((res)=>{
+      console.log(data,'傳送中．．．')
       if(res.statusText === 'OK'){
         photoExist(res.data.exist)
       }
@@ -99,9 +100,9 @@ export default function ModdleWrapper(){
     await axios.delete(`api/category/${_id}/${memoData.groupId}`).then(async(res)=>{
       await modalClose(async()=>{setModalType('success')})
 			update();
-      const collections = session?.user?.collections;
+      const collections = session!.user!.collections;
       setGroup(collections);
-      setGroupIndex(groupIndex - 1)
+      setGroupIndex(groupIndex - 1 > 0? groupIndex - 1 : collections.length - 2)
     })
   }
 
@@ -146,7 +147,7 @@ export default function ModdleWrapper(){
     <>
       {
         modalShow && (
-          <div className={`fixed w-full h-full top-0 left-0 z-[1000] flex bg-slate-600/70 opacity-0 justify-center items-center p-[30px] duration-300`} ref={scope} modal-type={modalType}>
+          <div className={`fixed w-full h-full top-0 left-0 z-[1000] flex bg-slate-600/70 transition-all justify-center items-center p-[30px] duration-300`} ref={scope} modal-type={modalType}>
             <div className="w-full max-w-80 bg-white rounded-2xl p-[30px] text-lg relative text-default text-center scale-0 duration-300" id="modalBox">
               {
                 modalType != 'changeAvatar'?(
@@ -177,7 +178,7 @@ export default function ModdleWrapper(){
                       <div className="text-sm mt-[20px] h-[160px] overflow-y-scroll">
                         {
                           group?.slice().reverse().map((file,index)=>(
-                            <label className="flex w-full border rounded-50px py-2 px-4 cursor-pointer hover:border-lime-600 mt-[10px]" key={index}>
+                            <label className="flex items-center w-full border rounded-50px py-2 px-4 cursor-pointer hover:border-lime-600 mt-[10px]" key={index}>
                               <input type="radio" name="group" value={file.groupId} onChange={onLabelChange} checked={file.groupId === selectGroup}/>
                               <p className="ml-[10px]">{file.name}</p>
                             </label>
