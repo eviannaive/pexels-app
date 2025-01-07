@@ -7,23 +7,29 @@ import { faCaretLeft, faCaretRight, faPenToSquare, faDownload, faTrash, faPen } 
 import 'swiper/css';
 import 'swiper/css/navigation';
 import imgValidateError from '@/lib/imgValidateError';
-import { useModalContext } from "@/context/ModalContext";
+// import { useModalContext } from "@/context/ModalContext";
 import { Enlarge } from '@/components/Enlarge';
 import axios from 'axios';
 import { LoadingFull } from '@/components/Loading';
 import { Swiper as typeSwiper } from 'swiper';
 import { ButtonExplore } from '@/components/Buttons';
+import { useModalStore } from "@/store/store";
+import downloadImg from '@/lib/downloadImage';
+import { Photos } from '../../../types'
 	
 export default function Dashboard() {
 	const { data: session, update } = useSession();
 	const _id = session?.user?._id;
 	const [ enlargeShow, setEnlargeShow ] = useState(false);
 	const [ editMode, setEditMode ] = useState(false);
+	const [ groupIndex, setGroupIndex ] = useState(0);
 	const [ fixedItem, setFixedItem] = useState(false);
 	const [ swiper, setSwiper ] = useState<null | typeSwiper>(null)
 	const [ isPending, startTransition] = useTransition();
 
-	const { setModalShow, setModalType, setImgId, setImgSrc, downloadImg, setMemoData,groupIndex, setGroupIndex } : any = useModalContext()
+	// const { setModalShow, setModalType, setImgId, setImgSrc, downloadImg, setMemoData,groupIndex, setGroupIndex } : any = useModalContext()
+	const stores = useModalStore((state)=>state);
+  const { modalOpen, setModalType, setSelectImg, setSelectGroup } = stores;
 	const imgLoadError = (id : string) => {
 		imgValidateError(id,(res)=>{
 			console.log(res)
@@ -31,8 +37,10 @@ export default function Dashboard() {
 	}
 
 	const handleEnlarge = (e : React.MouseEvent<HTMLImageElement>) => {
-		setImgId(String((e.target as HTMLElement)?.getAttribute('img-id')))
-		setImgSrc(String((e.target as HTMLElement)?.getAttribute('src')))
+		const $img = e.target as HTMLElement
+		setSelectImg($img.getAttribute('img-id'),$img.getAttribute('src'))
+		// setImgId(String((e.target as HTMLElement)?.getAttribute('img-id')))
+		// setImgSrc(String((e.target as HTMLElement)?.getAttribute('src')))
 		setEnlargeShow(true)
 	}
 
@@ -53,6 +61,7 @@ export default function Dashboard() {
 			const group = session?.user?.collections[groupIndex].groupId;
 			const $el = (e.target as HTMLElement)?.closest('[box-wrap]')?.firstChild 
 			const img = String(($el as HTMLElement).getAttribute('img-id'))
+			setGroupIndex(groupIndex - 1);
 			await axios.delete(`/api/category/${_id}/${group}/${img}`).then(async(res)=>{
 				await update()
 			})
@@ -63,9 +72,9 @@ export default function Dashboard() {
 		const $el = (e.target as HTMLElement)?.closest('[group-id]')
 		const id = ($el as HTMLElement)?.getAttribute('group-id');
 		const group = session?.user?.collections.find((g)=>g.groupId === id)
-		setMemoData(group)
+		setSelectGroup(group)
 		setModalType('changeName')
-		setModalShow(true)
+		modalOpen()
 		const input = ($el as HTMLElement)?.querySelector('input');
 	}
 
@@ -73,9 +82,9 @@ export default function Dashboard() {
 		const $el = (e.target as HTMLElement)?.closest('[group-id]')
 		const id = ($el as HTMLElement)?.getAttribute('group-id');
 		const group = session?.user?.collections.find((g)=>g.groupId === id)
-		setMemoData(group)
+		setSelectGroup(group)
 		setModalType('doubleCheck')
-		setModalShow(true)
+		modalOpen()
 	}
 
 	useEffect(()=>{
@@ -155,10 +164,10 @@ export default function Dashboard() {
 										): ''
 									}
 									{
-										session?.user?.collections.length && session?.user?.collections[groupIndex]?.photos.map((p,index)=>(
+										session?.user?.collections.length && session?.user?.collections[groupIndex]?.photos.map((photo : Photos,index : number)=>(
 											<div className='w-1/5 p-1 max-[840px]:w-1/3 max-[500px]:w-full group hover:z-30' key={index}>
 												<div className='pb-[100%] relative cursor-pointer overflow-hidden' box-wrap="">
-													<img src={p.imgSrc} className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]' onError={()=>{imgLoadError(p.imgId)}} onClick={handleEnlarge} img-id={p.imgId} alt=""/>
+													<img src={photo?.imgSrc} className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]' onError={()=>{imgLoadError(photo.imgId)}} onClick={handleEnlarge} img-id={photo.imgId} alt=""/>
 													{
 														editMode && (
 														<div className='absolute top-[15px] right-[15px] transition group-hover:opacity-100'>

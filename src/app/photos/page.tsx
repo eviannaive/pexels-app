@@ -8,16 +8,19 @@ import Image from 'next/image';
 import Pagination from '@/components/Pagination';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import downloadImg from '@/lib/downloadImage';
 
 // context
-import { useModalContext } from "@/context/ModalContext";
+// import { useModalContext } from "@/context/ModalContext";
 import { useSearchContext } from '@/context/searchContext';
+import { useModalStore } from "@/store/store";
 
 // components
 import { LoadingFull } from '@/components/Loading';
 import { NoResult } from '@/components/NoResult';
 import SearchBar from '@/components/SearchBar';
 import { Enlarge } from '@/components/Enlarge';
+
 
 const pexelsKey = process.env.NEXT_PUBLIC_PEXELS_KET;
 
@@ -43,7 +46,9 @@ export default function Photos() {
 			inputRef
 		} : any = useSearchContext()
 		
-		const { setModalShow, setModalType, setImgId, setImgSrc,downloadImg} : any = useModalContext()
+		// const { setModalShow, setModalType, setImgId, setImgSrc,downloadImg} : any = useModalContext();
+		const stores = useModalStore((state)=>state);
+  	const { modalOpen, setModalType, setSelectImg } = stores;
 		
 		const perPage = 12;
 	
@@ -66,12 +71,11 @@ export default function Photos() {
 			}
 		}
 
-		const modalOpen = (e : React.MouseEvent<HTMLDivElement>) => {
-			const $el = (e.target as HTMLElement)?.closest('[box-wrap]')?.firstChild;
-			setModalShow(true);
+		const handleModalOpen = (e : React.MouseEvent<HTMLDivElement>) => {
+			const $img = (e.target as HTMLElement)?.closest('[box-wrap]')?.firstChild as HTMLElement;
+			setSelectImg($img.getAttribute('img-id'),$img.getAttribute('src'))
 			session ? setModalType('like') : setModalType('login');
-			setImgId(String(($el as HTMLElement)?.getAttribute('img-id')))
-			setImgSrc(String(($el as HTMLElement)?.getAttribute('src')))
+			modalOpen();
 		}
 
 		const handleDownload = (e : React.MouseEvent<HTMLDivElement>) => {
@@ -80,8 +84,8 @@ export default function Photos() {
 		}
 		
 		const handleEnlarge = (e: React.MouseEvent<HTMLImageElement>) => {
-			setImgId(String((e.target as HTMLElement)?.getAttribute('img-id')))
-			setImgSrc(String((e.target as HTMLElement)?.getAttribute('src')))
+			const $img = (e.target as HTMLElement)?.closest('[box-wrap]')?.firstChild as HTMLElement;
+			setSelectImg($img.getAttribute('img-id'),$img.getAttribute('src'))
 			setEnlargeShow(true)
 		}
 
@@ -205,7 +209,7 @@ export default function Photos() {
 
 	return (
 		<div className='pt-[50px] pb-[80px] px-[40px] max-w-[1500px] mx-auto max-[840px]:px-[20px] max-[840px]:pb-[60px]'>
-			<Enlarge state={enlargeShow} setEnlargeShow={setEnlargeShow} eventLike={modalOpen}/>
+			<Enlarge state={enlargeShow} setEnlargeShow={setEnlargeShow} eventLike={handleModalOpen}/>
 			{ 
 				<div className={`flex justify-center items-center overflow-hidden transition-all duration-500 ${!firstSearch.current ? 'h-0 opacity-0' : 'h-[80px] opacity-1'}`}>
 					<p className={`text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-teal-600 max-[840px]:text-2xl`}>Please input any keyword of your search.</p>
@@ -238,7 +242,7 @@ export default function Photos() {
 														<div className='pb-[100%] relative group cursor-pointer overflow-hidden' box-wrap="">
 															<img src={photosArr[index]?.src.large} className='absolute-center w-full h-full object-cover transition duration-700 group-hover:scale-[1.15]' onClick={handleEnlarge} img-id={photosArr[index]?.id} alt={photosArr[index].alt}/>
 															<div className='flex absolute bottom-3 right-2 p-[10px] opacity-0 transition duration-500 group-hover:opacity-100 flex-col gap-3 max-[840px]:gap-1 max-[840px]:right-1 max-[840px]:bottom-1'>
-																<div className='opacity-75 hover:opacity-100 transition-all' onClick={modalOpen}>
+																<div className='opacity-75 hover:opacity-100 transition-all' onClick={handleModalOpen}>
 																	<FontAwesomeIcon icon={faHeart} size="lg" color="#f9f9f9"/>
 																</div>
 																<div className='opacity-75 hover:opacity-100 transition-all' onClick={handleDownload}>

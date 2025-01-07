@@ -28,7 +28,8 @@
     "react-dom": "^18",
     "react-fast-marquee": "^1.6.2",
     "react-modal": "^3.16.1",
-    "swiper": "^11.0.6"
+    "swiper": "^11.0.6",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/node": "^20",

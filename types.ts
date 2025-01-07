@@ -6,7 +6,7 @@ export type Photos = {
   imgSrc: string
 }[]
 
-export type Collections = {
+export type Collection = {
   groupId: string,
   name: string,
   photos: Photos
@@ -18,7 +18,7 @@ export interface TypeUser {
   email: string,
   image: string,
   imgData?: string | null,
-  collections: Collections[],
+  collections: Collection[],
   provider: string,
   createAt: Date,
   updateAt: Date,

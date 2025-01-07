@@ -15,7 +15,7 @@ const SearchBar = ({ event } : { event: ()=>void}) => {
 		setInputValue(e.target.value)
 	}
 
-  const keyPress = (e : KeyboardEvent<HTMLInputElement>) => {
+  const keyPress = (e : React.KeyboardEvent<HTMLInputElement>) => {
     e.key === 'Enter' ? event() : ''
   }
 

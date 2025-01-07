@@ -8,7 +8,10 @@ import { useRef } from 'react'
 
 const Pagination = ({totalPages,event} : {totalPages : number ,event: Record<string,any> }) => {
   const { resultInfo } : Record<string,any> = useSearchContext()
-  const refInput= useRef<HTMLInputElement>(resultInfo.page)
+  const refInput= useRef<HTMLInputElement>(resultInfo.page);
+  const keyPress = (e : React.KeyboardEvent<HTMLInputElement>) => {
+    e.key === 'Enter' ? event.toPage(refInput.current.value) : ''
+  }
   return (
     <div className='flex items-center mt-[50px] text-slate-800'>
       {
@@ -26,7 +29,7 @@ const Pagination = ({totalPages,event} : {totalPages : number ,event: Record<str
             <FontAwesomeIcon icon={faAngleLeft} color="#373939" className="p-2 cursor-pointer" onClick={()=>{event.prev()}}/>
           ) : ''
       }
-      <input type="text" onChange={(e)=>{e.target.value = e.target.value.replace(/[^0-9]/g, '')}} maxLength={3} className='w-10 mr-2 p-1 text-center transition-all placeholder:text-slate-500 focus:placeholder:text-white focus-visible:outline-slate-500' placeholder={resultInfo.page} ref={refInput} />
+      <input type="text" onChange={(e)=>{e.target.value = e.target.value.replace(/[^0-9]/g, '')}} maxLength={3} className='w-10 mr-2 p-1 text-center transition-all placeholder:text-slate-500 focus:placeholder:text-white focus-visible:outline-slate-500' placeholder={resultInfo.page} ref={refInput} onKeyDown={keyPress}/>
       <div className='w-[30px] h-[30px] rounded-full bg-orange-100  text-orange-400 flex justify-center items-center text-sm cursor-pointer' onClick={()=>{event.toPage(refInput.current.value)}}>Go</div>
       {
         resultInfo.next_page?

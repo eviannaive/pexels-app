@@ -5,18 +5,20 @@ import { ButtonDefault } from '../Buttons';
 import { useAnimate } from "framer-motion"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { useModalContext } from "@/context/ModalContext";
-import axios from 'axios';
+// import { useModalContext } from "@/context/ModalContext";
+import { useModalStore } from "@/store/store";
 
 const AccountDropdown = ({state} :{state: boolean}) => {
   const { data: session, status } = useSession();
   const user = session?.user;
   let [ scope, animate] = useAnimate();
-  const { modalShow, setModalShow, modalType, setModalType,avatar } : any = useModalContext()
+  // const { modalShow, setModalShow, modalType, setModalType,avatar } : any = useModalContext()
+  const stores = useModalStore((state)=>state);
+  const {modalOpen, setModalType, avatar} = stores;
 
   const avatarChange = () => {
     setModalType('changeAvatar')
-    setModalShow(true);
+    modalOpen();
   }
 
   useEffect(()=>{
@@ -34,7 +36,7 @@ const AccountDropdown = ({state} :{state: boolean}) => {
             <div className='w-full h-full absolute-center bg-slate-800/50 opacity-0 group-hover:opacity-100'></div>
             {
               avatar ? (
-                <img src={avatar} alt="" className="w-full h-full object-cover"/>
+                <img src={avatar as string} alt="" className="w-full h-full object-cover"/>
               ) : (
                 <div className='w-full h-full flex-center'>
                   <FontAwesomeIcon icon={faUser} color="#fbc9d5" size="2x" />

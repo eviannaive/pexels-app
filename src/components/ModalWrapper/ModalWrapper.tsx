@@ -1,6 +1,6 @@
 "use client"
 
-import { useModalContext } from "@/context/ModalContext";
+// import { useModalContext } from "@/context/ModalContext";
 import { useRouter} from "next/navigation"
 import { useEffect, useRef, useState, useTransition } from "react";
 import delay from "@/lib/delay";
@@ -11,49 +11,66 @@ import axios from "axios";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckToSlot,faTriangleExclamation,faUser } from "@fortawesome/free-solid-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
-import { Collections } from "../../../types";
+import { Collection } from "../../../types";
 import { LoadingFull } from "../Loading";
+import { useModalStore } from "@/store/store";
 
 
 export default function ModdleWrapper(){
-  let { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc,memoData, setMemoData,groupIndex, setGroupIndex,avatarPreview, setAvatarPreview,avatar, setAvatar } : any = useModalContext();
+  // let { modalShow, setModalShow, modalType, setModalType, imgId, setImgId, imgSrc, setImgSrc,memoData, setMemoData,groupIndex, setGroupIndex,avatarPreview, setAvatarPreview,avatar, setAvatar } : any = useModalContext();
   const router = useRouter();
-  const [group, setGroup] = useState<Collections[] | undefined>([]);
-  const [selectGroup, setSelectGroup] = useState('')
+  // const [group, setGroup] = useState<Collections[] | undefined>([]);
+  // const [selectGroup, setSelectGroup] = useState('')
   const { data: session, update } = useSession();
-  const _id = session?.user?._id
   let [ scope, animate] = useAnimate();
+  let [ groupIndex, setGroupIndex ] = useState(0)
   let inputRef = useRef<HTMLInputElement>(null);
   let imgRef = useRef<HTMLImageElement>(null);
+  let renameRef = useRef<HTMLInputElement>(null);
   let [ isPending, startTransition ] = useTransition();
+  // stores
+  const stores = useModalStore((state)=>state);
+  const { userId, modalDisplay, modalType, selectImg, selectGroup, avatar, avatarPreview, modalOpen, modalClose, setModalType, setSelectImg, setSelectGroup, setAvatar, setAvatarPreview} = stores;
 
-  const modalClose = async(callback ?: ()=>void) => {
-    if(modalShow){
+  const handleModalClose = async(callback ?: ()=>void) => {
+    if(modalDisplay){
       callback?.();
       callback? await delay(500) : ''
       await animate([['#modalBox',{ scale: 0}],[scope.current, { opacity: 0 }]])
-      setModalShow(false)
+      modalClose()
     }
   }
 
-  const goLoginPage = async() => {
-    await modalClose();
+  // const modalClose = async(callback ?: ()=>void) => {
+  //   if(modalShow){
+  //     callback?.();
+  //     callback? await delay(500) : ''
+  //     await animate([['#modalBox',{ scale: 0}],[scope.current, { opacity: 0 }]])
+  //     setModalShow(false)
+  //   }
+  // }
+
+  const redirectLoginPage = async() => {
+    await handleModalClose();
     await delay(300)
     router.push('/login')
   }
 
   const newGroup = async() => {
     startTransition(async()=>{
-      const data = inputRef.current?.value;
-      if(!data){
+      const groupName = inputRef.current?.value;
+      console.log(groupName)
+      if(!groupName){
         return
       }
-      await axios.post(`/api/category/${session?.user?._id}`,{
-        fileName: data
+      await axios.post(`/api/category/${userId}`,{
+        fileName: groupName
       }).then((res)=>{
         const data = res.data.collections;
-        setGroup(data);
-        inputRef.current!.value = ''
+        setSelectGroup(data)
+        // setGroup(data);
+        inputRef.current!.value = '';
+        update()
       }).catch((err)=>{
         console.log(err)
       })
@@ -61,15 +78,22 @@ export default function ModdleWrapper(){
   }
 
   const onLabelChange = (e : React.ChangeEvent<HTMLInputElement>) => {
-    setSelectGroup((e.target as HTMLInputElement)?.value)
+    const groupId = (e.target as HTMLInputElement)?.value;
+    const findGroupData = session?.user?.collections?.find((data)=>(data?.groupId === groupId));
+    if(findGroupData) setSelectGroup(findGroupData)
+  }
+
+  const photoExist = (exist: boolean) => {
+    exist? setModalType('photoExist') : handleModalClose(async()=>{setModalType('checked')});
   }
 
   const sendLike = async(e : React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     startTransition(async()=>{
-      await axios.post(`/api/category/${_id}/${selectGroup}`,{
-        imgId,
-        imgSrc,
+      console.log(selectImg,selectGroup)
+      await axios.post(`/api/category/${userId}/${selectGroup?.groupId}`,{
+        imgId: selectImg?.id,
+        imgSrc: selectImg?.src,
       }).then((res)=>{
         if(res.status.toString().startsWith('2')){
           photoExist(res.data.exist)
@@ -79,44 +103,35 @@ export default function ModdleWrapper(){
     })
   }
 
-  const photoExist = (exist: boolean) => {
-    exist? setModalType('photoExist') : modalClose(async()=>{setModalType('checked')});
-  }
-
-  const defaultGroup = () => {
-    const defaultGroupId = group?.find(g=>(g.groupId === selectGroup));
-    defaultGroupId??setSelectGroup('00000')
-  }
-
   const changeGroupName = async() => {
-    if(memoData.name){
+    const newName = renameRef.current!.value;
+    if(newName){
       await new Promise((resolve)=>{
         startTransition(async()=>{
-          await axios.patch(`/api/category/${_id}/${memoData.groupId}`,{
-            newName: memoData.name
+          await axios.patch(`/api/category/${userId}/${selectGroup!.groupId}`,{
+            newName
           }).then((res)=>{
             resolve(res)
           })
         })
       })
-      await modalClose(async()=>{setModalType('success');await update()})
+      await handleModalClose(async()=>{setModalType('success');await update()})
     }
   }
 
   const deleteGroup = async() => {
     await new Promise(async(resolve)=>{
       startTransition(async()=>{
-        await axios.delete(`/api/category/${_id}/${memoData.groupId}`).then((res)=>{
+        await axios.delete(`/api/category/${userId}/${selectGroup!.groupId}`).then((res)=>{
           resolve(res)
         })
       })
     })
-    await modalClose(async()=>{
+    await handleModalClose(async()=>{
       setModalType('success');
       update();
-      const collections = session!.user!.collections;
-      setGroup(collections);
-      setGroupIndex(groupIndex - 1 > 0? groupIndex - 1 : collections.length - 2)
+      // const collections = session!.user!.collections;
+      setGroupIndex(groupIndex - 1)
     })
   }
 
@@ -141,18 +156,18 @@ export default function ModdleWrapper(){
 
   const saveAvatar = async() => {
     if(avatar === avatarPreview) {
-      await modalClose(async()=>{setModalType('success')})
+      await handleModalClose(async()=>{setModalType('success')})
       return;
     }
     await new Promise(async(resolve)=>{
       startTransition(async()=>{
-        await axios.patch(`/api/profile/${_id}`,{
+        await axios.patch(`/api/profile/${userId}`,{
           image: '',
           imgData: avatarPreview 
         }).then((res)=>{resolve(res)})
       })
     });
-    modalClose(async()=>{
+    handleModalClose(async()=>{
       setModalType('success');
       setAvatar(avatarPreview);
       update()}
@@ -169,24 +184,25 @@ export default function ModdleWrapper(){
   }
 
   useEffect(()=>{
+    // const collections = session?.user?.collections;
     !!avatarPreview ? '' :setAvatarPreview(avatar);
-    selectGroup ?? setSelectGroup(session?.user?.collections[0]?.groupId as string)
-    if(modalShow){
-      !group?.length? setGroup(session?.user?.collections) : '';
-      defaultGroup();
+    selectGroup?? setSelectGroup(session?.user?.collections[0])
+    if(modalDisplay){
+      // !group?.length? setGroup(session?.user?.collections) : '';
+      // defaultGroup();
       animate([[scope.current, { opacity: 1 }],['#modalBox',{ scale: 1 }]])
     }
-  },[modalShow,group])
+  },[modalDisplay])
   return(
     <>
       {
-        modalShow && (
+        modalDisplay && (
           <div className={`fixed w-full h-full top-0 left-0 z-[1000] flex bg-slate-600/70 transition-all justify-center items-center p-[30px] duration-300`} ref={scope} modal-type={modalType}>
             { isPending && <LoadingFull />}
             <div className="w-full max-w-80 bg-white rounded-2xl p-[30px] text-lg relative text-default text-center scale-0 duration-300" id="modalBox">
               {
                 modalType != 'changeAvatar'?(
-                  <button className="bg-stone-700 text-white rounded-full absolute w-[40px] h-[40px] top-[-10px] right-[-10px] flex-center" onClick={()=>{modalClose()}}>✕</button>
+                  <button className="bg-stone-700 text-white rounded-full absolute w-[40px] h-[40px] top-[-10px] right-[-10px] flex-center" onClick={()=>{handleModalClose()}}>✕</button>
                 ) : ''
               }
               {
@@ -195,7 +211,7 @@ export default function ModdleWrapper(){
                     <p>
                       Please log in first.
                     </p>
-                    <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={goLoginPage}>ok
+                    <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={redirectLoginPage}>ok
                     </button>
                   </div>
                 ) : ''
@@ -212,9 +228,9 @@ export default function ModdleWrapper(){
                     <form onSubmit={sendLike}>
                       <div className="text-sm mt-[20px] h-[160px] overflow-y-scroll">
                         {
-                          group?.slice().reverse().map((file,index)=>(
+                          session?.user?.collections?.slice().reverse().map((file,index)=>(
                             <label className="flex items-center w-full border rounded-50px py-2 px-4 cursor-pointer hover:border-lime-600 mt-[10px]" key={index}>
-                              <input type="radio" name="group" value={file.groupId} onChange={onLabelChange} checked={file.groupId === selectGroup}/>
+                              <input type="radio" name="group" value={file.groupId} onChange={onLabelChange} checked={file.groupId === selectGroup?.groupId}/>
                               <p className="ml-[10px]">{file.name}</p>
                             </label>
                           ))
@@ -243,7 +259,7 @@ export default function ModdleWrapper(){
                     <p>
                       Photo exists.
                     </p>
-                    <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={()=>{modalClose()}}>ok
+                    <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={()=>{handleModalClose()}}>ok
                     </button>
                   </div>
                 ) : ''
@@ -251,11 +267,7 @@ export default function ModdleWrapper(){
               {
                 modalType === 'changeName' ? (
                   <div>
-                    <input type="text" value={memoData.name} className="border-2 rounded-md px-2 text-default" onChange={(e)=>{setMemoData({
-                        ...memoData,
-                        name:e.target.value
-                      })
-                    }}/>
+                    <input type="text" value={selectGroup?.name} className="border-2 rounded-md px-2 text-default" ref={renameRef}/>
                     <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={changeGroupName}>update
                     </button>
                   </div>
@@ -269,7 +281,7 @@ export default function ModdleWrapper(){
                       <FontAwesomeIcon icon={faTriangleExclamation} color="#cd3c56" size="4x"/>
                       <p className="mt-[20px] w-full">FAIL</p>
                       <p className="w-full">Please try again.</p>
-                      <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={()=>{modalClose()}}>Understand.
+                      <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={()=>{handleModalClose()}}>Understand.
                     </button>
                     </div>
                   </div>
@@ -294,15 +306,15 @@ export default function ModdleWrapper(){
                   <div className="py-[20px]">
                     <div className="min-h-[120px] rounded-full flex flex-col justify-center items-center m-auto">
                       <FontAwesomeIcon icon={faTriangleExclamation} color="#cd3c56" size="4x"/>
-                      <p className="mt-[20px] w-full">There are <span className="text-rose-400">{memoData.photos.length}</span> photos</p>
+                      <p className="mt-[20px] w-full">There are <span className="text-rose-400">{selectGroup!.photos.length}</span> photos</p>
                       <p className="w-full">in 
                       <span>『 </span>
-                      <span className="text-rose-400" style={{'wordWrap':'break-word'}}>{memoData.name}</span>
+                      <span className="text-rose-400" style={{'wordWrap':'break-word'}}>{selectGroup!.name}</span>
                       <span> 』</span>
                       </p>
                       <p className="w-full">Are you sure to delete?</p>
                       <div className="flex gap-3">
-                        <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={()=>{modalClose()}}>Cancel
+                        <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={()=>{handleModalClose()}}>Cancel
                         </button>
                         <button className="inline-block bg-orange-600/70 text-white rounded-50px py-[5px] px-[30px] mt-[20px]" onClick={deleteGroup}>Delete
                         </button>
@@ -333,7 +345,7 @@ export default function ModdleWrapper(){
                         <p className="text-sm px-5 py-1 group-hover:text-white transition-all duration-300" >choose file</p>
                       </label>
                       <div className="flex w-full gap-3 mt-[40px]">
-                        <button className="inline-block bg-orange-600/70 text-white w-1/2  rounded-50px py-[5px]" onClick={()=>{modalClose();setAvatarPreview(avatar)}}>Cancel
+                        <button className="inline-block bg-orange-600/70 text-white w-1/2  rounded-50px py-[5px]" onClick={()=>{handleModalClose();setAvatarPreview(avatar)}}>Cancel
                         </button>
                         <button className="inline-block bg-orange-600/70 text-white w-1/2 rounded-50px py-[5px]" onClick={saveAvatar}>Save
                         </button>

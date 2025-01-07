@@ -3,16 +3,17 @@
 import { NavList } from "."
 import { useSession, signOut } from 'next-auth/react';
 import Link from "next/link"
-import { ButtonLogin } from "../Buttons"
+// import { ButtonLogin } from "../Buttons"
 import AccountDropdown from "../AccountDropdown"
-import { useState, useMemo, useEffect, useRef, useTransition, startTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import delay from "@/lib/delay";
 import Image from "next/image";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { useModalContext } from "@/context/ModalContext";
+// import { useModalContext } from "@/context/ModalContext";
 import fetchUserData from "@/lib/fetchUserData";
 import { NavData } from "../../../types";
+import { useModalStore } from "@/store/store";
 
 const logItem : NavData = {
     name: 'login',
@@ -21,11 +22,14 @@ const logItem : NavData = {
   };
 
 export default function Nav({list}:{list: NavData[]}){
-  const { data: session, status, update } = useSession();
+  const { data: session, status} = useSession();
   const [ open, setOpen ] = useState(false);
   const [ dropdown, setDropdown ] = useState(false);
   const [ isPending, startTransition ] = useTransition();
-  let { avatar, setAvatar, fetchUser, setFetchUser } : any = useModalContext();
+  const stores = useModalStore((state)=>state);
+  const {avatar, setUserId, setAvatar} = stores;
+
+  // let { avatar, setAvatar, fetchUser, setFetchUser } : any = useModalContext();
 
   const dropdownHandle = () => {
     startTransition(async()=>{
@@ -38,33 +42,38 @@ export default function Nav({list}:{list: NavData[]}){
     })
   }
 
-  const getUserData = async()=>{
-    const id = session?.user?._id.toString();
-    if(id){
-      const userData = await fetchUserData(id,(res)=>{setFetchUser(res.data.user)});
-      userData && userData['imgData'] ? setAvatar(userData['imgData']): setAvatar(session?.user?.image);
-    }
+  const refreshAvatar = async(userId : string)=>{
+    const img = session?.user?.image;
+    const userData = await fetchUserData(userId,(res)=>{
+      // console.log(res,'updateData')
+    });
+    userData && userData['imgData'] ? setAvatar(userData['imgData']): setAvatar(img as string);
+
   }
 
   useEffect(()=>{
-    dropdownHandle()
-  },[open])
+    window.addEventListener('click', ()=>{
+      setOpen(false)
+    })
+  },[])
 
-  useEffect(()=>{
-    getUserData();
-  },[status,avatar])
-  
   useEffect(()=>{
     if(session?.error){
       console.warn('auth error,sign out...')
       signOut()
     }
-    window.addEventListener('click', ()=>{
-      setOpen(false)
-    })
-  },[status])
+    if(session?.user?._id){
+      const stringId = session.user._id.toString();
+      setUserId(stringId)
+      refreshAvatar(stringId);
+    }
+  },[status,avatar])
 
+  useEffect(()=>{
+    dropdownHandle()
+  },[open])
 
+  
   return (
   <nav className='fixed top-0 left-0 w-full flex justify-end text-lg gap-x-5 px-5 py-2 bg-gradient-to-r from-sky-300 to-teal-700 z-[99] h-[var(--navHeight)] max-[600px]:gap-x-3'>
     <Link href="/" className="mr-auto flex-center">
@@ -76,7 +85,7 @@ export default function Nav({list}:{list: NavData[]}){
       <button className="w-[40px] h-[40px] rounded-full overflow-hidden hover: border-2 border-rose-200 transition-all hover:border-amber-300" onClick={(e)=>{e.stopPropagation();setOpen(!open)}} disabled={isPending}>
         {
           avatar? (
-            <img src={avatar} alt="" className="w-full h-full object-cover"/>
+            <img src={avatar as string} alt="" className="w-full h-full object-cover"/>
           ) : (
             <div>
               <FontAwesomeIcon icon={faUser} color="#fff" />
