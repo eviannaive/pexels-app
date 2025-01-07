@@ -202,15 +202,15 @@ export default function Photos() {
   };
 
   // search
-  const searchHandler = () => {
-    console.log("submit");
-    setKeyword(inputValue);
-    if (searchMemo.input === inputValue) return;
-    fetchData({ value: inputValue });
-    urlMemo.setProp({ value: inputValue });
-    urlMemo.propPageReset();
-    firstSearch.current = false;
-  };
+  // const searchHandler = () => {
+  //   console.log("submit");
+  //   setKeyword(inputValue);
+  //   if (searchMemo.input === inputValue) return;
+  //   fetchData({ value: inputValue });
+  //   urlMemo.setProp({ value: inputValue });
+  //   urlMemo.propPageReset();
+  //   firstSearch.current = false;
+  // };
 
   useEffect(() => {
     findBreakpoints();
