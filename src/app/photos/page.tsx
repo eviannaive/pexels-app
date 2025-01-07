@@ -80,7 +80,7 @@ export default function Photos() {
     height: 0,
   });
   const [gridCol, setGridCol] = useState(4);
-  const [keyword, setKeyword] = useState();
+  const [keyword, setKeyword] = useState<string | undefined>();
   const [page, setPage] = useState(1);
   const { data, error, isLoading } = useSWR(
     [keyword, page, randomKeyword],
@@ -265,7 +265,7 @@ export default function Photos() {
 
   const paginationHandler = useMemo(() => {
     return new PaginationControl();
-  }, [resultInfo]);
+  }, [data]);
 
   return (
     <div className="pt-[50px] pb-[80px] px-[40px] max-w-[1500px] mx-auto max-[840px]:px-[20px] max-[840px]:pb-[60px]">
@@ -274,32 +274,15 @@ export default function Photos() {
         setEnlargeShow={setEnlargeShow}
         eventLike={handleModalOpen}
       />
-      {
-        <div
-          className={`flex justify-center items-center overflow-hidden transition-all duration-500 ${!firstSearch.current ? "h-0 opacity-0" : "h-[80px] opacity-1"}`}
-        >
-          <p
-            className={`text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-teal-600 max-[840px]:text-2xl`}
-          >
-            Please input any keyword of your search.
-          </p>
-        </div>
-      }
-      <div className="text-center mt-[30px] mb-[50px] max-[840px]:mt-[0] max-[840px]:mb-[40px]">
-        <SearchBar event={searchHandler} placeholder={randomKeyword ?? ""} />
-      </div>
-      {isLoading ? (
-        <LoadingFull />
-      ) : (
-        // <div className='text-2xl text-center my-[80px]'>
-        // 	<Loading />
-
-        // </div>
-        ""
-      )}
+      <SearchBar
+        event={setKeyword}
+        placeholder={randomKeyword ?? ""}
+        // defaultValue="aaa"
+      />
+      {isLoading && <LoadingFull />}
       {!isLoading ? (
         <div className="flex items-center flex-col">
-          {keyword || randomKeyword ? (
+          {data.photos.length ? (
             <div className="w-full">
               <div className="flex flex-wrap border-l-2 border-t-2 border-dashed border-slate-400 w-full">
                 {Array(Math.ceil(data.photos.length / gridCol) * gridCol)
@@ -351,23 +334,18 @@ export default function Photos() {
                     </div>
                   ))}
               </div>
-              {!firstSearch.current && searchMemo.allPages ? (
-                <div className="flex px-3 justify-end">
-                  <Pagination
-                    totalPages={searchMemo.allPages}
-                    event={paginationHandler}
-                  />
-                </div>
-              ) : (
-                ""
-              )}
+
+              <div className="flex px-3 justify-end">
+                <Pagination
+                  totalPages={searchMemo.allPages}
+                  event={paginationHandler}
+                />
+              </div>
             </div>
           ) : (
-            initFetch.current && (
-              <div className="text-lg text-zinc-700 text-center py-[60px]">
-                <NoResult text={searchMemo.input} />
-              </div>
-            )
+            <div className="text-lg text-zinc-700 text-center py-[60px]">
+              <NoResult text={keyword ?? ""} />
+            </div>
           )}
         </div>
       ) : (
