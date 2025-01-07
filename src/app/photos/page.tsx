@@ -83,18 +83,14 @@ export default function Photos() {
   const [keyword, setKeyword] = useState<string | undefined>();
   const [page, setPage] = useState(1);
   const { data, error, isLoading } = useSWR(
-    [keyword, page, randomKeyword],
-    () => {
-      const query = keyword ?? randomKeyword;
+    `https://api.pexels.com/v1/search?query=${keyword || randomKeyword}&per_page=${perPage}&page=${page}`,
+    (url: string) => {
       return axios
-        .get(
-          `https://api.pexels.com/v1/search?query=${query}&per_page=${perPage}&page=${page}`,
-          {
-            headers: {
-              Authorization: pexelsKey,
-            },
+        .get(url, {
+          headers: {
+            Authorization: pexelsKey,
           },
-        )
+        })
         .then((res) => res.data);
     },
   );
@@ -280,7 +276,7 @@ export default function Photos() {
         // defaultValue="aaa"
       />
       {isLoading && <LoadingFull />}
-      {!isLoading ? (
+      {!isLoading && (
         <div className="flex items-center flex-col">
           {data.photos.length ? (
             <div className="w-full">
@@ -348,8 +344,6 @@ export default function Photos() {
             </div>
           )}
         </div>
-      ) : (
-        ""
       )}
     </div>
   );
