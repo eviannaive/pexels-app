@@ -12,10 +12,11 @@ import Pagination from "@/components/Pagination";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import downloadImg from "@/lib/downloadImage";
+import useSearchProps from "@/lib/useSearchProp";
 
 // context
 // import { useModalContext } from "@/context/ModalContext";
-import { useSearchContext } from "@/context/searchContext";
+// import { useSearchContext } from "@/context/searchContext";
 import { useModalStore } from "@/store/store";
 
 // components
@@ -48,19 +49,19 @@ const gridBreakpoints: {
 export default function Photos() {
   const { data: session } = useSession();
 
-  let {
-    setSearchBtnShow,
-    inputValue,
-    resultInfo,
-    setResultInfo,
-    photosArr,
-    setPhotosArr,
-    isPending,
-    startTransition,
-    initFetch,
-    firstSearch,
-    inputRef,
-  }: any = useSearchContext();
+  // let {
+  //   setSearchBtnShow,
+  //   inputValue,
+  //   resultInfo,
+  //   setResultInfo,
+  //   photosArr,
+  //   setPhotosArr,
+  //   isPending,
+  //   startTransition,
+  //   initFetch,
+  //   firstSearch,
+  //   inputRef,
+  // }: any = useSearchContext();
 
   // const { setModalShow, setModalType, setImgId, setImgSrc,downloadImg} : any = useModalContext();
   const stores = useModalStore((state) => state);
@@ -82,6 +83,7 @@ export default function Photos() {
   const [gridCol, setGridCol] = useState(4);
   const [keyword, setKeyword] = useState<string | undefined>();
   const [page, setPage] = useState(1);
+  const searchParams = useSearchParams();
   const { data, error, isLoading } = useSWR(
     `https://api.pexels.com/v1/search?query=${keyword || randomKeyword}&per_page=${perPage}&page=${page}`,
     (url: string) => {
@@ -133,69 +135,71 @@ export default function Photos() {
     setEnlargeShow(true);
   };
 
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
-  class SearchPropControl {
-    params = new URLSearchParams(searchParams);
-    setProp({ value, page }: { value?: string; page?: number }) {
-      value && this.params.set("query", value);
-      page && page > 1
-        ? this.params.set("page", String(page))
-        : this.params.delete("page");
-      this.setUrl();
-    }
-    getSearchProp() {
-      const query = this.params.get("query");
-      const page = this.params.get("page");
-      return { query, page };
-    }
-    propPageReset() {
-      this.params.delete("page");
-      this.setUrl();
-    }
-    setUrl() {
-      router.replace(`${pathname}?${this.params.toString()}`);
-    }
-  }
+  // const searchParams = useSearchParams();
+  // const pathname = usePathname();
+  // const router = useRouter();
+  const { setSearchProps, getSearchProp, propPageReset, setUrl } =
+    useSearchProps();
+  // class SearchPropControl {
+  //   params = new URLSearchParams(searchParams);
+  //   setProp({ value, page }: { value?: string; page?: number }) {
+  //     value && this.params.set("query", value);
+  //     page && page > 1
+  //       ? this.params.set("page", String(page))
+  //       : this.params.delete("page");
+  //     this.setUrl();
+  //   }
+  //   getSearchProp() {
+  //     const query = this.params.get("query");
+  //     const page = this.params.get("page");
+  //     return { query, page };
+  //   }
+  //   propPageReset() {
+  //     this.params.delete("page");
+  //     this.setUrl();
+  //   }
+  //   setUrl() {
+  //     router.replace(`${pathname}?${this.params.toString()}`);
+  //   }
+  // }
 
-  // memo static data
-  const searchMemo = useMemo(() => {
-    return {
-      input: inputValue || initFetch.current,
-      length: photosArr.length,
-      allPages: Math.ceil(resultInfo.total_results / perPage),
-    };
-  }, [photosArr]);
+  // // memo static data
+  // const searchMemo = useMemo(() => {
+  //   return {
+  //     input: inputValue || initFetch.current,
+  //     length: photosArr.length,
+  //     allPages: Math.ceil(resultInfo.total_results / perPage),
+  //   };
+  // }, [photosArr]);
 
-  const urlMemo = useMemo(() => {
-    return new SearchPropControl();
-  }, []);
+  // const urlMemo = useMemo(() => {
+  //   return new SearchPropControl();
+  // }, []);
 
   // fetch
-  const fetchData = async ({
-    value,
-    url,
-    page = 1,
-  }: {
-    value?: string;
-    url?: string;
-    page?: number;
-  }) => {
-    // setLoading(true)
-    startTransition(async () => {
-      const searchURL =
-        url ||
-        `https://api.pexels.com/v1/search?query=${value}&per_page=${perPage}&page=${page}`;
-      const result = await axios.get(searchURL, {
-        headers: {
-          Authorization: pexelsKey,
-        },
-      });
-      setResultInfo(result.data);
-      setPhotosArr(result.data.photos);
-    });
-  };
+  // const fetchData = async ({
+  //   value,
+  //   url,
+  //   page = 1,
+  // }: {
+  //   value?: string;
+  //   url?: string;
+  //   page?: number;
+  // }) => {
+  //   // setLoading(true)
+  //   startTransition(async () => {
+  //     const searchURL =
+  //       url ||
+  //       `https://api.pexels.com/v1/search?query=${value}&per_page=${perPage}&page=${page}`;
+  //     const result = await axios.get(searchURL, {
+  //       headers: {
+  //         Authorization: pexelsKey,
+  //       },
+  //     });
+  //     setResultInfo(result.data);
+  //     setPhotosArr(result.data.photos);
+  //   });
+  // };
 
   // search
   // const searchHandler = () => {
@@ -210,18 +214,18 @@ export default function Photos() {
 
   useEffect(() => {
     findBreakpoints();
-    if (!initFetch.current) {
-      const { query, page } = urlMemo.getSearchProp();
-      if (query) {
-        firstSearch.current = false;
-        inputRef.current.value = query;
-        setSearchBtnShow(true);
-      }
+    // if (!initFetch.current) {
+    //   const { query, page } = urlMemo.getSearchProp();
+    //   console.log(query, page, "query, page");
+    //   if (query) {
+    //     firstSearch.current = false;
+    //     inputRef.current.value = query;
+    //     setSearchBtnShow(true);
+    //   }
 
-      initFetch.current = randomKeyword;
-      // setKeyword(randomKeyword);
-      // fetchData({ value: query ?? randomKeyword(), page: Number(page) });
-    }
+    //   initFetch.current = randomKeyword;
+
+    // }
 
     window.addEventListener("resize", () => {
       setWinSize(windowResize());
@@ -234,33 +238,35 @@ export default function Photos() {
   }, []);
 
   useEffect(() => {
-    console.log(data, "data");
-  }, [data]);
+    const query = searchParams.get("query");
+    const page = searchParams.get("page");
+    query && setKeyword(query);
+  }, []);
 
   // pagination event
-  class PaginationControl {
-    setPageProp(pageNum: number) {
-      urlMemo.setProp({ page: pageNum });
-    }
-    async prev() {
-      if (!resultInfo.prev_page) return;
-      await fetchData({ url: resultInfo.prev_page });
-      this.setPageProp(resultInfo.page - 1);
-    }
-    async next() {
-      if (!resultInfo.next_page) return;
-      await fetchData({ url: resultInfo.next_page });
-      this.setPageProp(resultInfo.page + 1);
-    }
-    async toPage(page: number) {
-      const pageNum = page > searchMemo.allPages ? searchMemo.allPages : page;
-      await fetchData({ value: searchMemo.input, page: pageNum });
-      this.setPageProp(pageNum);
-    }
-  }
+  // class PaginationControl {
+  //   setPageProp(pageNum: number) {
+  //     urlMemo.setProp({ page: pageNum });
+  //   }
+  //   async prev() {
+  //     if (!resultInfo.prev_page) return;
+  //     await fetchData({ url: resultInfo.prev_page });
+  //     this.setPageProp(resultInfo.page - 1);
+  //   }
+  //   async next() {
+  //     if (!resultInfo.next_page) return;
+  //     await fetchData({ url: resultInfo.next_page });
+  //     this.setPageProp(resultInfo.page + 1);
+  //   }
+  //   async toPage(page: number) {
+  //     const pageNum = page > searchMemo.allPages ? searchMemo.allPages : page;
+  //     await fetchData({ value: searchMemo.input, page: pageNum });
+  //     this.setPageProp(pageNum);
+  //   }
+  // }
 
   const paginationHandler = useMemo(() => {
-    return new PaginationControl();
+    // return new PaginationControl();
   }, [data]);
 
   return (
@@ -273,7 +279,8 @@ export default function Photos() {
       <SearchBar
         event={setKeyword}
         placeholder={randomKeyword ?? ""}
-        // defaultValue="aaa"
+        setSearchProps={setSearchProps}
+        defaultValue={keyword}
       />
       {isLoading && <LoadingFull />}
       {!isLoading && (
@@ -331,12 +338,12 @@ export default function Photos() {
                   ))}
               </div>
 
-              <div className="flex px-3 justify-end">
+              {/* <div className="flex px-3 justify-end">
                 <Pagination
                   totalPages={searchMemo.allPages}
                   event={paginationHandler}
                 />
-              </div>
+              </div> */}
             </div>
           ) : (
             <div className="text-lg text-zinc-700 text-center py-[60px]">
