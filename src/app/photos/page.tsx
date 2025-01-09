@@ -5,6 +5,7 @@ import { faHeart, faDownload } from "@fortawesome/free-solid-svg-icons";
 import { useMemo, useEffect, useState, useRef, useTransition } from "react";
 import axios from "axios";
 import useSWR from "swr";
+import useSWRMutation from "swr/mutation";
 import fetcher from "@/lib/fetcher";
 
 import Image from "next/image";
@@ -81,11 +82,14 @@ export default function Photos() {
     height: 0,
   });
   const [gridCol, setGridCol] = useState(4);
+  const queryDetect = useRef(false);
   const [keyword, setKeyword] = useState<string | undefined>();
   const [page, setPage] = useState(1);
   const searchParams = useSearchParams();
   const { data, error, isLoading } = useSWR(
-    `https://api.pexels.com/v1/search?query=${keyword || randomKeyword}&per_page=${perPage}&page=${page}`,
+    queryDetect.current
+      ? `https://api.pexels.com/v1/search?query=${keyword || randomKeyword}&per_page=${perPage}&page=${page}`
+      : null,
     (url: string) => {
       return axios
         .get(url, {
@@ -95,7 +99,14 @@ export default function Photos() {
         })
         .then((res) => res.data);
     },
+    {
+      revalidateOnFocus: false,
+    },
   );
+
+  const searchDefaultMomo = useMemo(() => {
+    return keyword ? { defaultValue: keyword } : {};
+  }, [queryDetect.current]);
 
   const findBreakpoints = () => {
     const key: keyof typeof gridBreakpoints =
@@ -140,93 +151,9 @@ export default function Photos() {
   // const router = useRouter();
   const { setSearchProps, getSearchProp, propPageReset, setUrl } =
     useSearchProps();
-  // class SearchPropControl {
-  //   params = new URLSearchParams(searchParams);
-  //   setProp({ value, page }: { value?: string; page?: number }) {
-  //     value && this.params.set("query", value);
-  //     page && page > 1
-  //       ? this.params.set("page", String(page))
-  //       : this.params.delete("page");
-  //     this.setUrl();
-  //   }
-  //   getSearchProp() {
-  //     const query = this.params.get("query");
-  //     const page = this.params.get("page");
-  //     return { query, page };
-  //   }
-  //   propPageReset() {
-  //     this.params.delete("page");
-  //     this.setUrl();
-  //   }
-  //   setUrl() {
-  //     router.replace(`${pathname}?${this.params.toString()}`);
-  //   }
-  // }
-
-  // // memo static data
-  // const searchMemo = useMemo(() => {
-  //   return {
-  //     input: inputValue || initFetch.current,
-  //     length: photosArr.length,
-  //     allPages: Math.ceil(resultInfo.total_results / perPage),
-  //   };
-  // }, [photosArr]);
-
-  // const urlMemo = useMemo(() => {
-  //   return new SearchPropControl();
-  // }, []);
-
-  // fetch
-  // const fetchData = async ({
-  //   value,
-  //   url,
-  //   page = 1,
-  // }: {
-  //   value?: string;
-  //   url?: string;
-  //   page?: number;
-  // }) => {
-  //   // setLoading(true)
-  //   startTransition(async () => {
-  //     const searchURL =
-  //       url ||
-  //       `https://api.pexels.com/v1/search?query=${value}&per_page=${perPage}&page=${page}`;
-  //     const result = await axios.get(searchURL, {
-  //       headers: {
-  //         Authorization: pexelsKey,
-  //       },
-  //     });
-  //     setResultInfo(result.data);
-  //     setPhotosArr(result.data.photos);
-  //   });
-  // };
-
-  // search
-  // const searchHandler = () => {
-  //   console.log("submit");
-  //   setKeyword(inputValue);
-  //   if (searchMemo.input === inputValue) return;
-  //   fetchData({ value: inputValue });
-  //   urlMemo.setProp({ value: inputValue });
-  //   urlMemo.propPageReset();
-  //   firstSearch.current = false;
-  // };
 
   useEffect(() => {
     findBreakpoints();
-    // if (!initFetch.current) {
-    //   const { query, page } = urlMemo.getSearchProp();
-    //   console.log(query, page, "query, page");
-    //   if (query) {
-    //     firstSearch.current = false;
-    //     inputRef.current.value = query;
-    //     setSearchBtnShow(true);
-    //   }
-
-    //   initFetch.current = randomKeyword;
-
-    // }
-
     window.addEventListener("resize", () => {
       setWinSize(windowResize());
       findBreakpoints();
@@ -241,6 +168,7 @@ export default function Photos() {
     const query = searchParams.get("query");
     const page = searchParams.get("page");
     query && setKeyword(query);
+    queryDetect.current = true;
   }, []);
 
   // pagination event
@@ -280,12 +208,12 @@ export default function Photos() {
         event={setKeyword}
         placeholder={randomKeyword ?? ""}
         setSearchProps={setSearchProps}
-        defaultValue={keyword}
+        {...searchDefaultMomo}
       />
-      {isLoading && <LoadingFull />}
-      {!isLoading && (
+      {(!queryDetect.current || isLoading) && <LoadingFull />}
+      {!isLoading && queryDetect.current && (
         <div className="flex items-center flex-col">
-          {data.photos.length ? (
+          {data && data.photos.length ? (
             <div className="w-full">
               <div className="flex flex-wrap border-l-2 border-t-2 border-dashed border-slate-400 w-full">
                 {Array(Math.ceil(data.photos.length / gridCol) * gridCol)

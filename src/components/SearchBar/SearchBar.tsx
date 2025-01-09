@@ -36,7 +36,7 @@ const SearchBar = ({
   };
 
   useEffect(() => {
-    if (defaultValue && intro) {
+    if (defaultValue) {
       setInput(defaultValue);
       setIntro(false);
     }
