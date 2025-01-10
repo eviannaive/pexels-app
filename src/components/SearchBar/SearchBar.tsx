@@ -11,12 +11,10 @@ const SearchBar = ({
   event,
   defaultValue,
   placeholder,
-  setSearchProps,
 }: {
-  event: Dispatch<SetStateAction<string | undefined>>;
+  event: (value: string) => void;
   defaultValue?: string;
   placeholder: string;
-  setSearchProps: (data: SearchProp[]) => void;
 }) => {
   const [input, setInput] = useState("");
   const [intro, setIntro] = useState(true);
@@ -28,7 +26,6 @@ const SearchBar = ({
   const onSearch = () => {
     input && event(input);
     !intro && setIntro(false);
-    setSearchProps([{ key: "query", value: input }]);
   };
 
   const keyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {

@@ -2,22 +2,19 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faDownload } from "@fortawesome/free-solid-svg-icons";
-import { useMemo, useEffect, useState, useRef, useTransition } from "react";
+import { useMemo, useEffect, useState, useRef } from "react";
 import axios from "axios";
 import useSWR from "swr";
-import useSWRMutation from "swr/mutation";
-import fetcher from "@/lib/fetcher";
 
 import Image from "next/image";
 import Pagination from "@/components/Pagination";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import downloadImg from "@/lib/downloadImage";
-import useSearchProps from "@/lib/useSearchProp";
+import useSearchProps from "@/lib/useSearchProps";
 
 // context
-// import { useModalContext } from "@/context/ModalContext";
-// import { useSearchContext } from "@/context/searchContext";
+// import { useModalContext } from "@/context/ModalContext"
 import { useModalStore } from "@/store/store";
 
 // components
@@ -49,22 +46,6 @@ const gridBreakpoints: {
 
 export default function Photos() {
   const { data: session } = useSession();
-
-  // let {
-  //   setSearchBtnShow,
-  //   inputValue,
-  //   resultInfo,
-  //   setResultInfo,
-  //   photosArr,
-  //   setPhotosArr,
-  //   isPending,
-  //   startTransition,
-  //   initFetch,
-  //   firstSearch,
-  //   inputRef,
-  // }: any = useSearchContext();
-
-  // const { setModalShow, setModalType, setImgId, setImgSrc,downloadImg} : any = useModalContext();
   const stores = useModalStore((state) => state);
   const { modalOpen, setModalType, setSelectImg } = stores;
 
@@ -72,7 +53,6 @@ export default function Photos() {
 
   const randomKeyword = useMemo(() => {
     const item = demoList[Math.floor(Math.random() * demoList.length)];
-    console.log("usememo", item);
     return item;
   }, []);
 
@@ -103,6 +83,10 @@ export default function Photos() {
       revalidateOnFocus: false,
     },
   );
+
+  const totalPage = useMemo(() => {
+    return Math.ceil(data?.total_results / perPage);
+  }, [data?.total_results]);
 
   const searchDefaultMomo = useMemo(() => {
     return keyword ? { defaultValue: keyword } : {};
@@ -146,11 +130,7 @@ export default function Photos() {
     setEnlargeShow(true);
   };
 
-  // const searchParams = useSearchParams();
-  // const pathname = usePathname();
-  // const router = useRouter();
-  const { setSearchProps, getSearchProp, propPageReset, setUrl } =
-    useSearchProps();
+  const { setSearchProps } = useSearchProps();
 
   useEffect(() => {
     findBreakpoints();
@@ -165,37 +145,21 @@ export default function Photos() {
   }, []);
 
   useEffect(() => {
+    console.log("first");
     const query = searchParams.get("query");
     const page = searchParams.get("page");
     query && setKeyword(query);
+    page && setPage(Number(page));
     queryDetect.current = true;
   }, []);
 
-  // pagination event
-  // class PaginationControl {
-  //   setPageProp(pageNum: number) {
-  //     urlMemo.setProp({ page: pageNum });
-  //   }
-  //   async prev() {
-  //     if (!resultInfo.prev_page) return;
-  //     await fetchData({ url: resultInfo.prev_page });
-  //     this.setPageProp(resultInfo.page - 1);
-  //   }
-  //   async next() {
-  //     if (!resultInfo.next_page) return;
-  //     await fetchData({ url: resultInfo.next_page });
-  //     this.setPageProp(resultInfo.page + 1);
-  //   }
-  //   async toPage(page: number) {
-  //     const pageNum = page > searchMemo.allPages ? searchMemo.allPages : page;
-  //     await fetchData({ value: searchMemo.input, page: pageNum });
-  //     this.setPageProp(pageNum);
-  //   }
-  // }
-
-  const paginationHandler = useMemo(() => {
-    // return new PaginationControl();
-  }, [data]);
+  useEffect(() => {
+    if (queryDetect.current) {
+      console.log("update params", keyword, page);
+      keyword && setSearchProps("query", keyword);
+      page && setSearchProps("page", page);
+    }
+  }, [keyword, page]);
 
   return (
     <div className="pt-[50px] pb-[80px] px-[40px] max-w-[1500px] mx-auto max-[840px]:px-[20px] max-[840px]:pb-[60px]">
@@ -205,9 +169,11 @@ export default function Photos() {
         eventLike={handleModalOpen}
       />
       <SearchBar
-        event={setKeyword}
+        event={(value) => {
+          setKeyword(value);
+          setPage(1);
+        }}
         placeholder={randomKeyword ?? ""}
-        setSearchProps={setSearchProps}
         {...searchDefaultMomo}
       />
       {(!queryDetect.current || isLoading) && <LoadingFull />}
@@ -265,13 +231,17 @@ export default function Photos() {
                     </div>
                   ))}
               </div>
-
-              {/* <div className="flex px-3 justify-end">
-                <Pagination
-                  totalPages={searchMemo.allPages}
-                  event={paginationHandler}
-                />
-              </div> */}
+              <div className="flex px-3 justify-end">
+                {data && (
+                  <Pagination
+                    totalPages={totalPage}
+                    currentPage={page}
+                    prevLink={data.prev_page}
+                    nextLink={data.next_page}
+                    onChange={setPage}
+                  />
+                )}
+              </div>
             </div>
           ) : (
             <div className="text-lg text-zinc-700 text-center py-[60px]">
