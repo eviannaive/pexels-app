@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { SearchProp } from "@/types";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { ChangeEvent, Dispatch, SetStateAction } from "react";
 
